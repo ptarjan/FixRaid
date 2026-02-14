@@ -33,7 +33,7 @@ function M:OpenRaidTab()
     -- short delay to avoid confusing the Blizzard UI addon.
     R.openRaidTabTimer = M:ScheduleTimer(function()
       R.openRaidTabTimer = false
-      OpenFriendsFrame(4)
+      OpenFriendsFrame(3)
     end, DELAY_OPEN_RAID_TAB)
   end
 end
@@ -43,19 +43,7 @@ function M:ToggleRaidTab()
 end
 
 function M:OpenConfig()
-  -- Use the new Settings API to open the specific category for your addon
-  if Settings and Settings.OpenToCategory then
-    local category = Settings.GetCategory(A.NAME)
-    if category then
-      Settings.OpenToCategory(A.NAME)
-    else
-      -- If for some reason the category isn't found, fall back to opening the settings menu
-      Settings.OpenToCategory(Settings.Categories.Interface)
-    end
-  else
-    -- Fallback for older versions or issues
-    InterfaceOptionsFrame_OpenToCategory(A.NAME)
-  end
+  LibStub("AceConfigDialog-3.0"):Open(A.NAME)
 end
 
 function M:CloseConfig()
