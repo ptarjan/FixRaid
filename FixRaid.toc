@@ -2,7 +2,7 @@
 ## Title: FixRaid (Continued)
 ## Author: ptarjan
 ## X-Original-Author: denalb
-## Version: 1.1.0
+## Version: @project-version@
 ## Notes: Automatically set up groups in raids.
 ## DefaultState: Enabled
 ## SavedVariables: FixRaidDB
