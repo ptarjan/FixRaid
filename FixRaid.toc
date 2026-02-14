@@ -38,6 +38,7 @@ modules\frGui.lua
 modules\group.lua
 modules\inspect.lua
 modules\marker.lua
+modules\markingPanel.lua
 modules\meter.lua
 modules\modJoinLeave.lua
 modules\options.lua

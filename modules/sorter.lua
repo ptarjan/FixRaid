@@ -260,6 +260,7 @@ function M:AnnounceComplete()
     if A.DEBUG >= 1 then A.console:Debugf(M, "steps=%d seconds=%.1f timeouts=%d", R.active.stepCount, (time() - R.active.startTime), R.active.timeoutCount) end
   end
   swap(R, "lastComplete", "active")
+  M:SendMessage("FIXGROUPS_SORT_COMPLETE")
 end
 
 function M:ClearTimeout(resetCount)

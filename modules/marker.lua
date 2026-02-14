@@ -7,49 +7,27 @@ M.private = {
   tmp1 = {},
   tmp2 = {},
   tmp3 = {},
+  pendingMarks = {},
+  warnedMarking = false,
 }
 local R = M.private
 
 local min, sort, tinsert, wipe = min, sort, tinsert, wipe
-local GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, IsInInstance, IsInRaid, PromoteToAssistant, SetRaidTarget, UnitExists, UnitGroupRolesAssigned, UnitName = GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, IsInInstance, IsInRaid, PromoteToAssistant, SetRaidTarget, UnitExists, UnitGroupRolesAssigned, UnitName
+local GetNumGroupMembers, GetRaidRosterInfo, IsInInstance, IsInRaid, PromoteToAssistant, UnitExists, UnitGroupRolesAssigned, UnitName = GetNumGroupMembers, GetRaidRosterInfo, IsInInstance, IsInRaid, PromoteToAssistant, UnitExists, UnitGroupRolesAssigned, UnitName
+
+local function warnMarkingUnavailable()
+  if not R.warnedMarking then
+    R.warnedMarking = true
+    A.console:Print("Automatic raid target marking is unavailable in Patch 12.0 due to Blizzard API changes. Please mark targets manually.")
+  end
+end
 
 function M:FixParty()
   if IsInRaid() then
     return
   end
-  local party = wipe(R.tmp1)
-  local unitID, p
-  for i = 1, 5 do
-    unitID = (i == 5) and "player" or ("party"..i)
-    if UnitExists(unitID) then
-      p = {unitID=unitID, key=UnitGroupRolesAssigned(unitID)}
-      if p.key == "TANK" then
-        p.key = "a"
-      elseif p.key == "HEALER" then
-        p.key = "b"
-      else
-        p.key = "c"
-      end
-      p.key = p.key..(UnitName(unitID) or "Unknown")
-      tinsert(party, p)
-    end
-  end
-  sort(party, function(a, b) return a.key < b.key end)
-  local mark
-  local allMarked = true
-  for i = 1, min(#party, #A.options.partyMarkIcons) do
-    mark = A.options.partyMarkIcons[i]
-    if mark > 0 and mark <= 8 and GetRaidTargetIndex(party[i].unitID) ~= mark then
-      SetRaidTarget(party[i].unitID, mark)
-      allMarked = false
-    end
-  end
-  if allMarked then
-    -- Clear marks.
-    for i = 1, min(#party, #A.options.partyMarkIcons) do
-      SetRaidTarget(party[i].unitID, 0)
-    end
-  end
+  -- Raid target marking is protected in 12.0+.
+  warnMarkingUnavailable()
 end
 
 function M:FixRaid(isRequestFromAssist)
@@ -70,13 +48,7 @@ function M:FixRaid(isRequestFromAssist)
       if IsInRaid() and A.util:IsLeader() and A.options.tankAssist and unitRole == "TANK" and (not rank or rank < 1) then
         PromoteToAssistant(unitID)
       end
-      if not isRequestFromAssist and A.options.clearRaidMarks and unitRole ~= "TANK" then
-        if GetRaidTargetIndex(unitID) then
-          SetRaidTarget(unitID, 0)
-        end
-      end
       if unitRole == "TANK" then
-        -- Don't mark tanks right away. We need to assign them alphabetically.
         tinsert(marks, {key=name, unitID=unitID})
         if raidRole ~= "MAINTANK" then
           -- Can't call protected func: SetPartyAssignment("MAINTANK", unitID)
@@ -93,16 +65,19 @@ function M:FixRaid(isRequestFromAssist)
     return
   end
 
-  if A.options.tankMark then
-    sort(marks, function(a, b) return a.key < b.key end)
-    local mark
-    for i = 1, min(#marks, #A.options.tankMarkIcons) do
-      mark = A.options.tankMarkIcons[i]
-      if mark > 0 and mark <= 8 and GetRaidTargetIndex(marks[i].unitID) ~= mark then
-        SetRaidTarget(marks[i].unitID, mark)
-      end
+  -- Populate pending marks for the marking panel.
+  -- Always populate regardless of tankMark option; the automatic trigger
+  -- in FIXGROUPS_SORT_COMPLETE checks tankMark, but /fr mark should work
+  -- even when the option is off.
+  wipe(R.pendingMarks)
+  for i, m in ipairs(marks) do
+    local icon = A.options.tankMarkIcons[i]
+    if icon and icon >= 1 and icon <= 8 then
+      tinsert(R.pendingMarks, {name=m.key, markIcon=icon})
     end
   end
+
+  -- Marking is handled by the marking panel after sorting completes.
 
   if A.options.tankMainTankAlways or (A.options.tankMainTankPRN and IsInInstance()) then
     local bad
@@ -131,4 +106,8 @@ function M:FixRaid(isRequestFromAssist)
       A.console:Printf(L["marker.print.openRaidTab"], A.util:Highlight(A.util:GetBindingKey("TOGGLESOCIAL", "O")))
     end
   end
+end
+
+function M:GetPendingMarks()
+  return R.pendingMarks
 end
