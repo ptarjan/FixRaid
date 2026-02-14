@@ -22,7 +22,7 @@ end
 
 local format, floor, ipairs, pairs, sort, tinsert, tostring, wipe = format, floor, ipairs, pairs, sort, tinsert, tostring, wipe
 local tconcat = table.concat
-local SetRaidSubgroup, SwapRaidSubgroup = SetRaidSubgroup, SwapRaidSubgroup
+local InCombatLockdown, SetRaidSubgroup, SwapRaidSubgroup = InCombatLockdown, SetRaidSubgroup, SwapRaidSubgroup
 
 -- The delta table is an array of players who are in the wrong group.
 function M:BuildDelta(sortMode)
@@ -138,7 +138,10 @@ local function startAction(name, newGroup, func, desc)
   M:CancelAction()
   R.action.name = name
   R.action.newGroup = newGroup
-  R.action.timer = M:ScheduleTimer(func, DELAY_ACTION)
+  R.action.timer = M:ScheduleTimer(function()
+    if InCombatLockdown() then return end
+    func()
+  end, DELAY_ACTION)
   R.action.desc = desc
 end
 
