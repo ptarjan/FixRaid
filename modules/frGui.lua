@@ -144,6 +144,7 @@ function M:Open()
   newRow(c)
   addButton(true, c, "core")
   addButton(true, c, "meter")
+  addButton(false, c, "mark")
   newRow(c)
   if A.options.showExtraSortModes then
     addButton(true, c, "alpha")
@@ -161,6 +162,8 @@ end
 local function addTooltipLines(t, cmd)
   if cmd == "config" then
     t:AddLine(format(L["gui.fixRaid.help.config"], A.util:GetBindingKey("TOGGLEGAMEMENU", "ESCAPE"), A.NAME), 1,1,0, false)
+  elseif cmd == "mark" then
+    t:AddLine("Open the marking panel to apply raid target icons to tanks.", 1,1,0, true)
   elseif cmd == "choose" or cmd == "list" or cmd == "listself" or cmd == "cancel" then
     t:AddLine(L["gui.fixRaid.help."..cmd], 1,1,0, true)
   else

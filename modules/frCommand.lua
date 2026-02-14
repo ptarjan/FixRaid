@@ -19,6 +19,8 @@ local function handleBasicCommands(cmd, args)
   elseif cmd == "cancel" then
     A.sorter:StopManual()
     A.addonChannel:Broadcast("f:cancel")
+  elseif cmd == "mark" then
+    A.markingPanel:ForceShowPanel()
   elseif cmd == "reannounce" or cmd == "reann" then
     A.sorter:ResetAnnounced()
   elseif cmd == "choose" or strmatch(cmd, "^choose ") then
