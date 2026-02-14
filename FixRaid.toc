@@ -1,7 +1,8 @@
 ## Interface: 120001
-## Title: FixRaid
-## Author: denalb
-## Version: 1.0.17
+## Title: FixRaid (Continued)
+## Author: ptarjan
+## X-Original-Author: denalb
+## Version: 1.1.0
 ## Notes: Automatically set up groups in raids.
 ## DefaultState: Enabled
 ## SavedVariables: FixRaidDB
