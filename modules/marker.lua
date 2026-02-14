@@ -11,7 +11,7 @@ M.private = {
 local R = M.private
 
 local min, sort, tinsert, wipe = min, sort, tinsert, wipe
-local GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, IsInInstance, IsInRaid, PromoteToAssistant, SetLootMethod, SetRaidTarget, UnitExists, UnitGroupRolesAssigned, UnitName = GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, IsInInstance, IsInRaid, PromoteToAssistant, SetLootMethod, SetRaidTarget, UnitExists, UnitGroupRolesAssigned, UnitName
+local GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, IsInInstance, IsInRaid, PromoteToAssistant, SetRaidTarget, UnitExists, UnitGroupRolesAssigned, UnitName = GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, IsInInstance, IsInRaid, PromoteToAssistant, SetRaidTarget, UnitExists, UnitGroupRolesAssigned, UnitName
 
 function M:FixParty()
   if IsInRaid() then
@@ -60,17 +60,14 @@ function M:FixRaid(isRequestFromAssist)
   local marks = wipe(R.tmp1)
   local unsetTanks = wipe(R.tmp2)
   local setNonTanks = wipe(R.tmp3)
-  local name, rank, subgroup, rank, online, raidRole, isML, _, unitID, unitRole
+  local name, rank, subgroup, rank, online, raidRole, unitID, unitRole
   for i = 1, GetNumGroupMembers() do
-    name, rank, subgroup, _, _, _, _, online, _, raidRole, isML = GetRaidRosterInfo(i)
-    if A.util:IsLeader() and A.options.fixOfflineML and isML and not online then
-      SetLootMethod("master", "player")
-    end
+    name, rank, subgroup, _, _, _, _, online, _, raidRole = GetRaidRosterInfo(i)
     if subgroup >= 1 and subgroup < A.util:GetFirstSittingGroup() then
       name = name or "Unknown"
       unitID = "raid"..i
       unitRole = UnitGroupRolesAssigned(unitID)
-      if IsInRaid() and A.util:IsLeader() and A.options.tankAssist and (unitRole == "TANK" or isML) and (not rank or rank < 1) then
+      if IsInRaid() and A.util:IsLeader() and A.options.tankAssist and unitRole == "TANK" and (not rank or rank < 1) then
         PromoteToAssistant(unitID)
       end
       if not isRequestFromAssist and A.options.clearRaidMarks and unitRole ~= "TANK" then

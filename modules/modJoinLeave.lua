@@ -4,7 +4,7 @@ local M = A:NewModule("modJoinLeave", "AceHook-3.0", "AceTimer-3.0")
 A.modJoinLeave = M
 
 local format, gsub, pairs, strmatch, tostring = format, gsub, pairs, strmatch, tostring
-local ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilter, UnitName = ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilter, UnitName
+local UnitName = UnitName
 local HEALER, INLINE_HEALER_ICON, INLINE_TANK_ICON, ERR_RAID_YOU_JOINED, TANK = HEALER, INLINE_HEALER_ICON, INLINE_TANK_ICON, ERR_RAID_YOU_JOINED, TANK
 local _G = _G
 
@@ -181,10 +181,10 @@ function M:FilterSystemMsg(event, message, ...)
 end
 
 function M:OnInitialize()
-  ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", M.FilterSystemMsg)
-  M:RawHook("ChatFrame_DisplaySystemMessageInPrimary", true)
+  ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_SYSTEM", M.FilterSystemMsg)
+  M:RawHook(ChatFrameUtil, "DisplaySystemMessageInPrimary", true)
 end
 
-function M:ChatFrame_DisplaySystemMessageInPrimary(message, ...)
-  return M.hooks.ChatFrame_DisplaySystemMessageInPrimary(M:Modify(message), ...)
+function M:DisplaySystemMessageInPrimary(message, ...)
+  return M.hooks[ChatFrameUtil].DisplaySystemMessageInPrimary(M:Modify(message), ...)
 end

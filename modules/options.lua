@@ -314,15 +314,6 @@ R.optionsTable.args.mark.args = {
     get = function(i) return A.options.tankAssist end,
     set = function(i,v) A.options.tankAssist = v end,
   },
-  fixOfflineML = {
-    order = 20,
-    name = L["options.widget.fixOfflineML.text"],
-    desc = L["options.widget.fixOfflineML.desc"],
-    type = "toggle",
-    width = "full",
-    get = function(i) return A.options.fixOfflineML end,
-    set = function(i,v) A.options.fixOfflineML = v end,
-  },
   -- -------------------------------------------------------------------------
   headerRAIDASSIST = {
     order = 100,

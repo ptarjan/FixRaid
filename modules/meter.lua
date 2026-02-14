@@ -24,7 +24,7 @@ local DETAILS_SEGMENTS = {"overall", "current"}
 local EMPTY = {}
 
 local format, ipairs, pairs, select, tinsert, wipe = format, ipairs, pairs, select, tinsert, wipe
-local GetUnitName, IsAddOnLoaded = GetUnitName, IsAddOnLoaded
+local GetUnitName = GetUnitName
 -- GLOBALS: _G, tdps, tdpsPlayer, tdpsPet, Skada, Recount, Details
 
 SUPPORTED_ADDONS.TinyDPS.getSnapshot = function()

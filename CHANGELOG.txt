@@ -1,4 +1,11 @@
-﻿v1.0.2
+﻿v1.0.17
+  - Update for WoW Patch 12.0.1 (Midnight)
+  - Migrate ChatFrame_AddMessageEventFilter to ChatFrameUtil.AddMessageEventFilter
+  - Migrate ChatFrame_DisplaySystemMessageInPrimary hook to ChatFrameUtil
+  - Remove deprecated global API references (GetAddOnMetadata, IsAddOnLoaded, GetSpellInfo, UnitBuff, SetLootMethod)
+  - Remove dead Master Loot code and fixOfflineML option
+
+v1.0.2
   - Change Project Name to FixGroups-Reborn
   - More fixes for Damager Role Detection
 
