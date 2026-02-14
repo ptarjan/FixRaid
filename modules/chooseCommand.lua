@@ -226,6 +226,7 @@ local function getValidClasses(mode, modeType)
       c["MONK"] = true
       c["SHAMAN"] = true
       c["HUNTER"] = true
+      c["EVOKER"] = true
     elseif mode == "vanquisher" then
       c["DEATHKNIGHT"] = true
       c["MAGE"] = true

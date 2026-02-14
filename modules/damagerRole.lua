@@ -26,6 +26,7 @@ M.CLASS_DAMAGER_ROLE = {
   WARLOCK     = "ranged",
   -- HUNTER      = "ranged", -- comment out for WoW 7.0 (Legion)
   DEMONHUNTER = "melee",
+  EVOKER      = "ranged",
 }
 -- We have to include tanks and healers to handle people who clear their role.
 local SPECID_ROLE = {

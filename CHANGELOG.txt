@@ -1,5 +1,8 @@
 ﻿v1.0.17
   - Update for WoW Patch 12.0.1 (Midnight)
+  - Add Blizzard built-in Damage Meter support via C_DamageMeter API (preferred over third-party meters)
+  - Add Evoker to CLASS_DAMAGER_ROLE as ranged (Devastation/Augmentation)
+  - Add Evoker to tier token protector group in /choose command
   - Migrate ChatFrame_AddMessageEventFilter to ChatFrameUtil.AddMessageEventFilter
   - Migrate ChatFrame_DisplaySystemMessageInPrimary hook to ChatFrameUtil
   - Remove deprecated global API references (GetAddOnMetadata, IsAddOnLoaded, GetSpellInfo, UnitBuff, SetLootMethod)

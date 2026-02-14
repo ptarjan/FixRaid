@@ -1,4 +1,4 @@
---- Extract damage/healing meter data from other addons.
+--- Extract damage/healing meter data from the built-in meter or other addons.
 local A, L = unpack(select(2, ...))
 local M = A:NewModule("meter")
 A.meter = M
@@ -9,8 +9,9 @@ M.private = {
 local R = M.private
 local H, HA = A.util.Highlight, A.util.HighlightAddon
 
+local BLIZZARD_METER_NAME = "Blizzard Damage Meter"
 -- This list is ordered by popularity.
-M.SUPPORTED_ADDONS_DISPLAY_ORDER = {"Recount", "Skada", "TinyDPS", "Details!"}
+M.SUPPORTED_ADDONS_DISPLAY_ORDER = {BLIZZARD_METER_NAME, "Details!", "Skada", "TinyDPS", "Recount"}
 -- This next list is ordered by minimalism. In case the player is running
 -- multiple damage meter addons, pick whichever one we find first in this list.
 local SUPPORTED_ADDONS_ORDER = {"TinyDPS", "Skada", "Recount", "Details"}
@@ -22,6 +23,45 @@ local SUPPORTED_ADDONS = {
 }
 local DETAILS_SEGMENTS = {"overall", "current"}
 local EMPTY = {}
+
+-- Built-in Blizzard Damage Meter (12.0+).
+-- Session types: 0=Overall, 1=Current, 2=Expired
+-- Meter types: 0=DamageDone, 2=HealingDone
+local function getBlizzardSnapshot()
+  if not C_DamageMeter or not C_DamageMeter.IsDamageMeterAvailable() then
+    return false
+  end
+  local damageSession = C_DamageMeter.GetCombatSessionFromType(0, 0)
+  local healingSession = C_DamageMeter.GetCombatSessionFromType(0, 2)
+  if not damageSession and not healingSession then
+    return false
+  end
+  -- Build a short-name to full-name lookup for cross-realm matching.
+  local fullPlayerNames = wipe(R.tmp1)
+  for name, _ in pairs(A.group:GetRoster()) do
+    fullPlayerNames[A.util:StripRealm(name)] = name
+  end
+  local found = false
+  if damageSession and damageSession.combatSources then
+    for _, source in ipairs(damageSession.combatSources) do
+      local rosterName = fullPlayerNames[source.name] or source.name
+      if A.group:GetPlayer(rosterName) then
+        found = true
+        R.snapshot[rosterName] = (R.snapshot[rosterName] or 0) + (source.totalAmount or 0)
+      end
+    end
+  end
+  if healingSession and healingSession.combatSources then
+    for _, source in ipairs(healingSession.combatSources) do
+      local rosterName = fullPlayerNames[source.name] or source.name
+      if A.group:GetPlayer(rosterName) then
+        found = true
+        R.snapshot[rosterName] = (R.snapshot[rosterName] or 0) + (source.totalAmount or 0)
+      end
+    end
+  end
+  return found
+end
 
 local format, ipairs, pairs, select, tinsert, wipe = format, ipairs, pairs, select, tinsert, wipe
 local GetUnitName = GetUnitName
@@ -145,6 +185,10 @@ function M:GetSupportedAddonList()
 end
 
 function M:TestInterop()
+  -- Prefer the built-in Blizzard Damage Meter (12.0+).
+  if C_DamageMeter and C_DamageMeter.IsDamageMeterAvailable() then
+    return format(L["meter.print.usingDataFrom"], HA(BLIZZARD_METER_NAME))
+  end
   for _, name in ipairs(SUPPORTED_ADDONS_ORDER) do
     if C_AddOns.IsAddOnLoaded(name) and _G[SUPPORTED_ADDONS[name].obj] then
       return format(L["meter.print.usingDataFrom"], HA(A.util:GetAddonNameAndVersion(name)))
@@ -155,6 +199,17 @@ end
 
 function M:BuildSnapshot(notifyIfNoAddon)
   wipe(R.snapshot)
+  -- Prefer the built-in Blizzard Damage Meter (12.0+).
+  if C_DamageMeter and C_DamageMeter.IsDamageMeterAvailable() then
+    if getBlizzardSnapshot() then
+      A.console:Printf(L["meter.print.usingDataFrom"], HA(BLIZZARD_METER_NAME))
+    else
+      A.console:Printf(L["meter.print.noDataFrom"], HA(BLIZZARD_METER_NAME))
+    end
+    calculateAverages()
+    if A.DEBUG >= 1 then M:DebugPrintMeterSnapshot() end
+    return
+  end
   for _, name in ipairs(SUPPORTED_ADDONS_ORDER) do
     if C_AddOns.IsAddOnLoaded(name) and _G[SUPPORTED_ADDONS[name].obj] then
       if SUPPORTED_ADDONS[name].getSnapshot() then
