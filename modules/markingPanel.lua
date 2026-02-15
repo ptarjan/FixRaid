@@ -19,7 +19,7 @@ local TITLE_HEIGHT = 24
 local PADDING = 10
 
 local format, ipairs, min, tinsert, wipe = format, ipairs, min, tinsert, wipe
-local CreateFrame, GetNumGroupMembers, InCombatLockdown, UnitClass, UnitName = CreateFrame, GetNumGroupMembers, InCombatLockdown, UnitClass, UnitName
+local C_Timer, CreateFrame, GetNumGroupMembers, InCombatLockdown, UnitClass, UnitName = C_Timer, CreateFrame, GetNumGroupMembers, InCombatLockdown, UnitClass, UnitName
 
 local function getMarkIconTexture(markIndex)
   return format("Interface\\TargetingFrame\\UI-RaidTargetingIcon_%d", markIndex)
@@ -147,7 +147,15 @@ function M:FIXGROUPS_SORT_COMPLETE()
     R.pendingCombat = true
     return
   end
-  M:ShowPanel(pendingMarks)
+  -- Defer to a clean execution context to break taint propagated from
+  -- SetRaidSubgroup() calls during the sort process.
+  C_Timer.After(0, function()
+    if InCombatLockdown() then
+      R.pendingCombat = true
+      return
+    end
+    M:ShowPanel(pendingMarks)
+  end)
 end
 
 function M:PLAYER_REGEN_ENABLED()
