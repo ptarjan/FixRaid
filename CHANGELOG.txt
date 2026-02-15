@@ -1,4 +1,7 @@
-﻿v1.0.17
+﻿v1.1.1
+  - Fix marking panel taint error ("secret number value") when sort completes
+
+v1.0.17
   - Update for WoW Patch 12.0.1 (Midnight)
   - Add Blizzard built-in Damage Meter support via C_DamageMeter API (preferred over third-party meters)
   - Add Evoker to CLASS_DAMAGER_ROLE as ranged (Devastation/Augmentation)
