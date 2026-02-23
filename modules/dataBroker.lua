@@ -59,7 +59,9 @@ local function groupCompOnTooltipShow(tooltip)
   else
     tooltip:AddDoubleLine(format("%s:", L["phrase.groupComp"]), NOT_IN_GROUP, 1,1,0, 1,1,0)
   end
-  if C_LFGList.GetActiveEntryInfo() then
+  -- Wrap in pcall to avoid tainting Blizzard's LFG system in 12.0+
+  local ok, activeEntry = pcall(C_LFGList.GetActiveEntryInfo)
+  if ok and activeEntry then
     tooltip:AddLine(" ")
     tooltip:AddLine(L["dataBroker.groupComp.groupQueued"], 0,1,0)
   end
