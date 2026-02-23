@@ -12,6 +12,8 @@ local _G = _G
 local PATTERNS = false
 
 local function matchMessage(message)
+  -- Guard against secret values in 12.0+
+  if issecretvalue and issecretvalue(message) then return end
   if not PATTERNS then
     local function makePattern(s)
       -- Change a formatting string into a string matching pattern.
@@ -177,6 +179,8 @@ function M:Modify(message, previewComp, previewPlayer)
 end
 
 function M:FilterSystemMsg(event, message, ...)
+  -- Guard against secret values in 12.0+
+  if issecretvalue and issecretvalue(message) then return false, message, ... end
   return false, M:Modify(message), ...
 end
 
@@ -186,5 +190,9 @@ function M:OnInitialize()
 end
 
 function M:DisplaySystemMessageInPrimary(message, ...)
+  -- Guard against secret values in 12.0+
+  if issecretvalue and issecretvalue(message) then
+    return M.hooks[ChatFrameUtil].DisplaySystemMessageInPrimary(message, ...)
+  end
   return M.hooks[ChatFrameUtil].DisplaySystemMessageInPrimary(M:Modify(message), ...)
 end
