@@ -86,6 +86,8 @@ local function watchChat(event, message, sender)
   if not R.expectNumChatMsgs or not isExpecting(true) or not message then
     return
   end
+  -- Guard against secret values in 12.0+
+  if issecretvalue and (issecretvalue(sender) or issecretvalue(message)) then return end
   if A.DEBUG >= 1 then A.console:Debugf(M, "watchChat event=%s message=[%s] sender=%s expectNumChatMsgs=[%s]", event, A.util:Escape(message), sender, R.expectNumChatMsgs) end
   if not UnitExists(sender) then
     sender = A.util:StripRealm(sender)

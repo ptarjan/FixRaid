@@ -37,6 +37,8 @@ function M:CHAT_MSG_ADDON(event, prefix, message, channel, sender)
   if prefix ~= PREFIX or not sender then
     return
   end
+  -- Guard against secret values in 12.0+
+  if issecretvalue and issecretvalue(sender) then return end
   if not UnitExists(sender) then
     sender = A.util:StripRealm(sender)
   end

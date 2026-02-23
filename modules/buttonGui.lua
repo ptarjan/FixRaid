@@ -34,6 +34,8 @@ local function handleClick(_, button)
 end
 
 local function watchChat(event, message, sender)
+  -- Guard against secret values in 12.0+
+  if issecretvalue and (issecretvalue(sender) or issecretvalue(message)) then return end
   if A.DEBUG >= 1 then A.console:Debugf(M, "watchChat event=%s message=[%s] sender=%s", event, A.util:Escape(message), sender) end
   if A.options.watchChat and sender ~= UnitName("player") and message and A.sorter:CanBegin() then
     message = strlower(message)
