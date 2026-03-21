@@ -85,7 +85,7 @@ end
 function M:PLAYER_SPECIALIZATION_CHANGED(event, unitID)
   if unitID then
     local name, realm = UnitName(unitID)
-    if name and realm and realm ~= "" then
+    if name and realm and not issecretvalue(realm) and realm ~= "" then
       name = name.."-"..gsub(realm, "[ %-]", "")
     end
     if name then

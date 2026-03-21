@@ -273,21 +273,25 @@ function M:ClassColor(class)
 end
 
 function M:UnitNameWithColor(unitID)
-  return "|c"..M:ClassColor(select(2, UnitClass(unitID)))..(UnitName(unitID) or "Unknown").."|r"
+  local name = UnitName(unitID)
+  if not name or issecretvalue(name) then name = "Unknown" end
+  return "|c"..M:ClassColor(select(2, UnitClass(unitID)))..name.."|r"
 end
 
 function M:NameAndRealm(name)
+  if not name or issecretvalue(name) then return name end
   if strfind(name, "%-") then
     return name
   end
   local realm = select(2, UnitFullName(name))
-  if not realm then
+  if not realm or issecretvalue(realm) then
     realm = gsub(GetRealmName(), "[ %-]", "")
   end
   return realm and (name.."-"..realm) or name
 end
 
 function M:StripRealm(name)
+  if not name or issecretvalue(name) then return name end
   return strsplit("-", name, 2)
 end
 
