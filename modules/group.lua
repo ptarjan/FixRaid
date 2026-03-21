@@ -85,10 +85,10 @@ end
 function M:PLAYER_SPECIALIZATION_CHANGED(event, unitID)
   if unitID then
     local name, realm = UnitName(unitID)
-    if name and realm and not issecretvalue(realm) and realm ~= "" then
-      name = name.."-"..gsub(realm, "[ %-]", "")
-    end
-    if name then
+    if name and not issecretvalue(name) then
+      if realm and not issecretvalue(realm) and realm ~= "" then
+        name = name.."-"..gsub(realm, "[ %-]", "")
+      end
       A.damagerRole:ForgetSession(name)
     end
   end
