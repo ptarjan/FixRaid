@@ -7,8 +7,10 @@ A.markingPanel = M
 M.private = {
   container = false,
   rows = {},
+  mtRows = {},
   pendingCombat = false,
   appliedMarks = {},  -- tracks tanks already marked via panel clicks
+  appliedMTs = {},    -- tracks tanks already set as main tank via panel clicks
 }
 local R = M.private
 
@@ -19,7 +21,7 @@ local TITLE_HEIGHT = 24
 local PADDING = 10
 
 local format, ipairs, min, tinsert, wipe = format, ipairs, min, tinsert, wipe
-local C_Timer, CreateFrame, GetNumGroupMembers, InCombatLockdown, UnitClass, UnitName = C_Timer, CreateFrame, GetNumGroupMembers, InCombatLockdown, UnitClass, UnitName
+local CreateFrame, GetNumGroupMembers, InCombatLockdown, UnitClass, UnitName = CreateFrame, GetNumGroupMembers, InCombatLockdown, UnitClass, UnitName
 
 local function getMarkIconTexture(markIndex)
   return format("Interface\\TargetingFrame\\UI-RaidTargetingIcon_%d", markIndex)
@@ -122,6 +124,53 @@ local function createRow(parent, index)
   return btn
 end
 
+local function createMTRow(parent, index)
+  local btn = CreateFrame("Button", "FixRaidMTBtn"..index, parent, "SecureActionButtonTemplate")
+  btn:SetSize(PANEL_WIDTH - PADDING * 2, ROW_HEIGHT)
+  btn:SetAttribute("type", "macro")
+  btn:SetAttribute("macrotext", "")
+
+  local highlight = btn:CreateTexture(nil, "HIGHLIGHT")
+  highlight:SetAllPoints()
+  highlight:SetColorTexture(1, 1, 1, 0.1)
+
+  -- Shield icon on the left.
+  local icon = btn:CreateTexture(nil, "ARTWORK")
+  icon:SetSize(20, 20)
+  icon:SetPoint("LEFT", btn, "LEFT", 4, 0)
+  icon:SetAtlas("groupfinder-icon-role-large-tank")
+  btn.mtIcon = icon
+
+  -- Tank name text.
+  local nameText = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+  nameText:SetPoint("LEFT", icon, "RIGHT", 8, 0)
+  nameText:SetPoint("RIGHT", btn, "RIGHT", -4, 0)
+  nameText:SetJustifyH("LEFT")
+  btn.nameText = nameText
+
+  btn:RegisterForClicks("AnyUp", "AnyDown")
+
+  btn:SetScript("PostClick", function(self)
+    R.appliedMTs[self.mtName] = true
+    if not InCombatLockdown() then
+      self:Hide()
+    end
+    local anyVisible = false
+    for i = 1, MAX_ROWS do
+      if (R.rows[i] and R.rows[i]:IsShown()) or (R.mtRows[i] and R.mtRows[i]:IsShown()) then
+        anyVisible = true
+        break
+      end
+    end
+    if not anyVisible then
+      M:HidePanel()
+    end
+  end)
+
+  btn:Hide()
+  return btn
+end
+
 function M:OnEnable()
   M:RegisterMessage("FIXGROUPS_SORT_COMPLETE")
   M:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -132,30 +181,21 @@ function M:OnEnable()
   R.container = createContainer()
   for i = 1, MAX_ROWS do
     R.rows[i] = createRow(R.container, i)
+    R.mtRows[i] = createMTRow(R.container, i)
   end
 end
 
 function M:FIXGROUPS_SORT_COMPLETE()
-  if not A.options.tankMark then
-    return
-  end
-  local pendingMarks = A.marker:GetPendingMarks()
-  if not pendingMarks or #pendingMarks == 0 then
+  local pendingMarks = A.options.tankMark and A.marker:GetPendingMarks() or {}
+  local pendingMTs = A.marker:GetPendingMainTanks() or {}
+  if (not pendingMarks or #pendingMarks == 0) and #pendingMTs == 0 then
     return
   end
   if InCombatLockdown() then
     R.pendingCombat = true
     return
   end
-  -- Defer to a clean execution context to break taint propagated from
-  -- SetRaidSubgroup() calls during the sort process.
-  C_Timer.After(0, function()
-    if InCombatLockdown() then
-      R.pendingCombat = true
-      return
-    end
-    M:ShowPanel(pendingMarks)
-  end)
+  M:ShowPanel(pendingMarks, pendingMTs)
 end
 
 function M:PLAYER_REGEN_ENABLED()
@@ -167,10 +207,12 @@ end
 
 function M:PLAYER_ENTERING_WORLD()
   wipe(R.appliedMarks)
+  wipe(R.appliedMTs)
 end
 
 function M:ROLE_CHANGED_INFORM()
   wipe(R.appliedMarks)
+  wipe(R.appliedMTs)
 end
 
 function M:ResolveTankUnitIDs(tankData)
@@ -197,54 +239,100 @@ function M:ResolveTankUnitIDs(tankData)
   return resolved
 end
 
-function M:ShowPanel(tankData)
+function M:ShowPanel(tankData, mtData)
   if InCombatLockdown() then
     R.pendingCombat = true
     return
   end
 
-  local resolved = M:ResolveTankUnitIDs(tankData)
+  local resolved = M:ResolveTankUnitIDs(tankData or {})
 
-  -- Filter out tanks already marked via panel clicks.
+  -- Filter out tanks already marked (via panel clicks or already correct in-game).
   local filtered = {}
   for _, data in ipairs(resolved) do
-    if not R.appliedMarks[data.name..":"..data.markIcon] then
+    local currentMark = GetRaidTargetIndex(data.unitID)
+    if issecretvalue and issecretvalue(currentMark) then currentMark = nil end
+    if currentMark ~= data.markIcon and not R.appliedMarks[data.name..":"..data.markIcon] then
       tinsert(filtered, data)
     end
   end
-  if #filtered == 0 then
+
+  -- Filter out tanks already set as main tank via panel clicks.
+  local filteredMTs = {}
+  for _, data in ipairs(mtData or {}) do
+    if not R.appliedMTs[data.name] then
+      -- Resolve unitID (may have shifted after sort)
+      local unitID
+      for j = 1, GetNumGroupMembers() do
+        local n = UnitName("raid"..j)
+        if n and (n == data.name or A.util:StripRealm(data.name) == n) then
+          unitID = "raid"..j
+          break
+        end
+      end
+      if unitID then
+        local _, class = UnitClass(unitID)
+        tinsert(filteredMTs, {name=data.name, unitID=unitID, class=class})
+      end
+    end
+  end
+
+  if #filtered == 0 and #filteredMTs == 0 then
     return
   end
 
-  local numRows = min(#filtered, MAX_ROWS)
+  local numMarkRows = min(#filtered, MAX_ROWS)
+  local totalRows = 0
 
-  -- Update each row.
-  for i = 1, numRows do
+  -- Update mark rows.
+  for i = 1, numMarkRows do
     local row = R.rows[i]
     local data = filtered[i]
 
     row:SetAttribute("unit", data.unitID)
     row:SetAttribute("marker", data.markIcon)
 
-    -- Set raid target icon.
     row.markIcon:SetTexture(getMarkIconTexture(data.markIcon))
 
-    -- Set class-colored name.
     local colorStr = A.util:ClassColor(data.class)
     local displayName = A.util:StripRealm(data.name)
     row.nameText:SetText("|c"..colorStr..displayName.."|r")
 
-    row:SetPoint("TOPLEFT", R.container, "TOPLEFT", PADDING, -(TITLE_HEIGHT + PADDING + (i - 1) * ROW_HEIGHT))
+    row:SetPoint("TOPLEFT", R.container, "TOPLEFT", PADDING, -(TITLE_HEIGHT + PADDING + totalRows * ROW_HEIGHT))
     row:Show()
+    totalRows = totalRows + 1
   end
 
-  -- Hide unused rows.
-  for i = numRows + 1, MAX_ROWS do
+  -- Hide unused mark rows.
+  for i = numMarkRows + 1, MAX_ROWS do
     R.rows[i]:Hide()
   end
 
-  -- Resize container to fit rows.
-  R.container:SetSize(PANEL_WIDTH, TITLE_HEIGHT + PADDING * 2 + numRows * ROW_HEIGHT)
+  -- Update main tank rows.
+  local numMTRows = min(#filteredMTs, MAX_ROWS)
+  for i = 1, numMTRows do
+    local row = R.mtRows[i]
+    local data = filteredMTs[i]
+
+    row.mtName = data.name
+    row:SetAttribute("macrotext", "/maintank "..data.name)
+
+    local colorStr = A.util:ClassColor(data.class)
+    local displayName = A.util:StripRealm(data.name)
+    row.nameText:SetText("Set MT: |c"..colorStr..displayName.."|r")
+
+    row:SetPoint("TOPLEFT", R.container, "TOPLEFT", PADDING, -(TITLE_HEIGHT + PADDING + totalRows * ROW_HEIGHT))
+    row:Show()
+    totalRows = totalRows + 1
+  end
+
+  -- Hide unused MT rows.
+  for i = numMTRows + 1, MAX_ROWS do
+    R.mtRows[i]:Hide()
+  end
+
+  -- Resize container to fit all rows.
+  R.container:SetSize(PANEL_WIDTH, TITLE_HEIGHT + PADDING * 2 + totalRows * ROW_HEIGHT)
   R.container:Show()
 
 end
@@ -262,10 +350,12 @@ function M:ForceShowPanel()
   end
   A.marker:FixRaid(false)
   wipe(R.appliedMarks)
+  wipe(R.appliedMTs)
   local pendingMarks = A.marker:GetPendingMarks()
-  if not pendingMarks or #pendingMarks == 0 then
-    A.console:Print("No tanks to mark.")
+  local pendingMTs = A.marker:GetPendingMainTanks() or {}
+  if (#pendingMarks == 0) and (#pendingMTs == 0) then
+    A.console:Print("No tanks to mark or set as main tank.")
     return
   end
-  M:ShowPanel(pendingMarks)
+  M:ShowPanel(pendingMarks, pendingMTs)
 end

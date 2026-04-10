@@ -8,6 +8,7 @@ M.private = {
   tmp2 = {},
   tmp3 = {},
   pendingMarks = {},
+  pendingMainTanks = {},
   warnedMarking = false,
 }
 local R = M.private
@@ -39,9 +40,13 @@ function M:FixRaid(isRequestFromAssist)
   local unsetTanks = wipe(R.tmp2)
   local setNonTanks = wipe(R.tmp3)
   local name, rank, subgroup, rank, online, raidRole, unitID, unitRole
+  local firstSitting = A.util:GetFirstSittingGroup()
+  if issecretvalue and issecretvalue(firstSitting) then firstSitting = 9 end
   for i = 1, GetNumGroupMembers() do
     name, rank, subgroup, _, _, _, _, online, _, raidRole = GetRaidRosterInfo(i)
-    if subgroup >= 1 and subgroup < A.util:GetFirstSittingGroup() then
+    if issecretvalue and issecretvalue(subgroup) then subgroup = 1 end
+    if issecretvalue and issecretvalue(rank) then rank = 0 end
+    if subgroup >= 1 and subgroup < firstSitting then
       name = name or "Unknown"
       unitID = "raid"..i
       unitRole = UnitGroupRolesAssigned(unitID)
@@ -51,12 +56,10 @@ function M:FixRaid(isRequestFromAssist)
       if unitRole == "TANK" then
         tinsert(marks, {key=name, unitID=unitID})
         if raidRole ~= "MAINTANK" then
-          -- Can't call protected func: SetPartyAssignment("MAINTANK", unitID)
-          tinsert(unsetTanks, A.util:UnitNameWithColor(unitID))
+          tinsert(unsetTanks, {name=name, unitID=unitID})
         end
       elseif raidRole == "MAINTANK" then
-        -- Can't call protected func: SetPartyAssignment(nil, unitID)
-        tinsert(setNonTanks, A.util:UnitNameWithColor(unitID))
+        tinsert(setNonTanks, {name=name, unitID=unitID})
       end
     end
   end
@@ -79,35 +82,19 @@ function M:FixRaid(isRequestFromAssist)
 
   -- Marking is handled by the marking panel after sorting completes.
 
+  -- Populate pending main tank assignments for the marking panel.
+  wipe(R.pendingMainTanks)
   if A.options.tankMainTankAlways or (A.options.tankMainTankPRN and IsInInstance()) then
-    local bad
-    if #unsetTanks > 0 then
-      bad = true
-      if #unsetTanks == 1 then
-        A.console:Printf(L["marker.print.needSetMainTank.singular"], A.util:LocaleTableConcat(unsetTanks))
-      else
-        A.console:Printf(L["marker.print.needSetMainTank.plural"], A.util:LocaleTableConcat(unsetTanks))
-      end
-    end
-    if #setNonTanks > 0 then
-      bad = true
-      if #setNonTanks == 1 then
-        A.console:Printf(L["marker.print.needClearMainTank.singular"], A.util:LocaleTableConcat(setNonTanks))
-      else
-        A.console:Printf(L["marker.print.needClearMainTank.plural"], A.util:LocaleTableConcat(setNonTanks))
-      end
-    end
-    if bad then
-      if A.options.openRaidTabPRN then
-        A.console:Print(L["marker.print.useRaidTab"])
-        A.utilGui:OpenRaidTab()
-        return
-      end
-      A.console:Printf(L["marker.print.openRaidTab"], A.util:Highlight(A.util:GetBindingKey("TOGGLESOCIAL", "O")))
+    for _, t in ipairs(unsetTanks) do
+      tinsert(R.pendingMainTanks, {name=t.name, unitID=t.unitID})
     end
   end
 end
 
 function M:GetPendingMarks()
   return R.pendingMarks
+end
+
+function M:GetPendingMainTanks()
+  return R.pendingMainTanks
 end
