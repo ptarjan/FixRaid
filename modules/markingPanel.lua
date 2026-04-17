@@ -174,6 +174,7 @@ end
 function M:OnEnable()
   M:RegisterMessage("FIXGROUPS_SORT_COMPLETE")
   M:RegisterEvent("PLAYER_REGEN_ENABLED")
+  pcall(M.RegisterEvent, M, "PLAYER_REGEN_LOST")
   M:RegisterEvent("PLAYER_ENTERING_WORLD")
   M:RegisterEvent("ROLE_CHANGED_INFORM")
 
@@ -198,7 +199,20 @@ function M:FIXGROUPS_SORT_COMPLETE()
   M:ShowPanel(pendingMarks, pendingMTs)
 end
 
+function M:PLAYER_REGEN_LOST()
+  -- Can't Hide() secure frames in combat, so make invisible instead
+  if R.container and R.container:IsShown() then
+    R.hiddenForCombat = true
+    R.container:SetAlpha(0)
+    R.container:EnableMouse(false)
+  end
+end
+
 function M:PLAYER_REGEN_ENABLED()
+  if R.hiddenForCombat then
+    R.hiddenForCombat = false
+    M:HidePanel()
+  end
   if R.pendingCombat then
     R.pendingCombat = false
     M:FIXGROUPS_SORT_COMPLETE()
@@ -251,8 +265,8 @@ function M:ShowPanel(tankData, mtData)
   local filtered = {}
   for _, data in ipairs(resolved) do
     local currentMark = GetRaidTargetIndex(data.unitID)
-    if issecretvalue and issecretvalue(currentMark) then currentMark = nil end
-    if currentMark ~= data.markIcon and not R.appliedMarks[data.name..":"..data.markIcon] then
+    local alreadyCorrect = currentMark ~= nil and not (issecretvalue and issecretvalue(currentMark)) and currentMark == data.markIcon
+    if not alreadyCorrect and not R.appliedMarks[data.name..":"..data.markIcon] then
       tinsert(filtered, data)
     end
   end
@@ -339,6 +353,8 @@ end
 
 function M:HidePanel()
   if R.container then
+    R.container:SetAlpha(1)
+    R.container:EnableMouse(true)
     R.container:Hide()
   end
 end
