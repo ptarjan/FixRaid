@@ -1,23 +1,16 @@
 ﻿v1.1.5
-  - Fix CurseForge auto-publishing (add X-Curse-Project-ID to TOC)
-
-v1.1.4
-  - Add combat lockdown handling for marking panel (hide on combat, restore after)
-  - Fix CurseForge project-id in .pkgmeta
+  - Fix CurseForge auto-publishing
 
 v1.1.3
-  - Add main tank buttons to marking panel using SecureActionButton with /maintank macro
-  - Skip mark buttons when tank already has correct raid target
-  - Additional issecretvalue guards for secret values from GetRaidRosterInfo
+  - Add main tank buttons to marking panel — click to set main tanks
+  - Skip mark buttons when tank already has the correct raid target
+  - Marking panel hides during combat
 
 v1.1.2
-  - Add issecretvalue guards for WoW 12.x secret string values
-  - Guard UnitName return values as secret
-  - Wrap C_LFGList.GetActiveEntryInfo in pcall to reduce taint spread
-  - Fix secret value errors in modJoinLeave system message handler
+  - Fix various errors caused by WoW 12.x secret values
 
 v1.1.1
-  - Fix marking panel taint error ("secret number value") when sort completes
+  - Fix marking panel error when sort completes
 
 v1.0.17
   - Update for WoW Patch 12.0.1 (Midnight)
