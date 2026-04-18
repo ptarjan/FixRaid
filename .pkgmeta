@@ -1,5 +1,6 @@
 package-as: FixRaid
 project-id: 1462581
+manual-changelog: CHANGELOG.md
 
 ignore:
   - .github
