@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.6
+- Update for WoW 12.0.5
+
 ## 1.1.5
 - Fix automatic CurseForge publishing
 
