@@ -10,3 +10,26 @@ A.L = LibStub("AceLocale-3.0"):GetLocale(A.NAME)
 addonTable[1] = A
 addonTable[2] = A.L
 _G[A.NAME] = A
+
+-- Warn if another FixRaid-like addon is also loaded (e.g., the original denalb
+-- version alongside this fork). Two copies fight over the same slash commands,
+-- frames, and saved variables, which produces confusing errors.
+local conflictFrame = CreateFrame("Frame")
+conflictFrame:RegisterEvent("PLAYER_LOGIN")
+conflictFrame:SetScript("OnEvent", function()
+  local conflicts = {}
+  for i = 1, C_AddOns.GetNumAddOns() do
+    local name, title = C_AddOns.GetAddOnInfo(i)
+    if name and name ~= addonName and C_AddOns.IsAddOnLoaded(name) then
+      local titleLower = title and strlower(title) or ""
+      local nameLower = strlower(name)
+      if strfind(nameLower, "fixraid") or strfind(titleLower, "fixraid") or strfind(titleLower, "fix raid") then
+        tinsert(conflicts, name)
+      end
+    end
+  end
+  if #conflicts > 0 then
+    print("|cffff5555FixRaid:|r another FixRaid addon is also loaded ("..table.concat(conflicts, ", ")..").")
+    print("|cffff5555FixRaid:|r two copies will conflict. Disable or delete the other one, then /reload.")
+  end
+end)

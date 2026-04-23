@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.7
+- Warn in chat if another FixRaid copy is also loaded (conflict between this fork and the original)
+
 ## 1.1.6
 - Update for WoW 12.0.5
 
