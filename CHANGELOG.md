@@ -11,6 +11,8 @@
 - Fix a garbled chat message when another officer cancels or takes over your sort
 - Fix `/choose` errors when the roll result message can't be read
 - The "give tanks assist" option no longer causes a blocked-action error — WoW 12.0 stops addons from promoting assistants, so FixRaid now reminds you once to promote manually
+- Fix Blizzard's Group Finder repeatedly erroring while FixRaid is loaded (the applicant list broke whenever a system chat message appeared)
+- Fix achievement links in whispers failing after shift-clicking the group comp display; if no chat box is open, the comp now prints to your chat window instead of opening one
 - Update for WoW 12.0.7
 
 ## 1.1.7

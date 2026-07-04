@@ -22,7 +22,7 @@ local FILL_PLUS_STATUS_BAR = A.NAME.."FillPlusStatusBar"
 local DELAY_OPEN_RAID_TAB = 0.01
 local AceGUI = LibStub("AceGUI-3.0")
 
-local ChatFrame_OpenChat, GameFontHighlightLarge, GetCurrentKeyBoardFocus, GetBindingFromClick, OpenFriendsFrame, PlaySound, ToggleFriendsFrame = ChatFrame_OpenChat, GameFontHighlightLarge, GetCurrentKeyBoardFocus, GetBindingFromClick, OpenFriendsFrame, PlaySound, ToggleFriendsFrame
+local GameFontHighlightLarge, GetCurrentKeyBoardFocus, GetBindingFromClick, OpenFriendsFrame, PlaySound, ToggleFriendsFrame = GameFontHighlightLarge, GetCurrentKeyBoardFocus, GetBindingFromClick, OpenFriendsFrame, PlaySound, ToggleFriendsFrame
 local format, max, pairs, strmatch = format, max, pairs, strmatch
 
 -- GLOBALS: ElvUI
@@ -62,7 +62,11 @@ function M:InsertText(text)
     end
     editBox:Insert(text)
   else
-    ChatFrame_OpenChat(text)
+    -- Don't ChatFrame_OpenChat(text) here: opening the chat editbox from
+    -- insecure code taints its state (active window, whisper target), which
+    -- later blocks protected chat actions and blames FixRaid. Print the text
+    -- instead so it can be copied or re-shift-clicked with a box open.
+    A.console:Print(text)
   end
 end
 

@@ -186,13 +186,12 @@ end
 
 function M:OnInitialize()
   ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_SYSTEM", M.FilterSystemMsg)
-  M:RawHook(ChatFrameUtil, "DisplaySystemMessageInPrimary", true)
-end
-
-function M:DisplaySystemMessageInPrimary(message, ...)
-  -- Guard against secret values in 12.0+
-  if issecretvalue and issecretvalue(message) then
-    return M.hooks[ChatFrameUtil].DisplaySystemMessageInPrimary(message, ...)
-  end
-  return M.hooks[ChatFrameUtil].DisplaySystemMessageInPrimary(M:Modify(message), ...)
+  -- NOTE: do NOT RawHook ChatFrameUtil.DisplaySystemMessageInPrimary here.
+  -- Replacing a function in that Blizzard-owned table taints every secure
+  -- caller of it — Blizzard's Group Finder calls it from its own event
+  -- handlers, and the taint then spread to the applicant list, producing
+  -- "attempt to compare ... secret value (execution tainted by 'FixRaid')"
+  -- errors in LFGList. The message filter above covers all server-sent
+  -- system messages; the hook only additionally decorated client-generated
+  -- ones, which is not worth breaking the Group Finder over.
 end
