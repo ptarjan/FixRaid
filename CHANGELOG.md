@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.8
+- Fix errors that could stop the addon working in raids where WoW 12.0 hides player or instance info (subgroups, ranks, difficulty, damage meter names and totals)
+- Fix `/fr tmrhs` always failing with an error
+- Fix `/fr split` quietly ignoring damage/healing data and splitting by role instead
+- Fix an error when using `/fr meter` in Mythic or LFR raids that aren't full
+- Fix the damage meter sort claiming it had Details! data when there was none
+- Right-clicking the data broker icon now closes the FixRaid window when it's already open (it used to do nothing)
+- Fix an error when closing the marking panel with X or Escape during combat
+- Fix a garbled chat message when another officer cancels or takes over your sort
+- Fix `/choose` errors when the roll result message can't be read
+- Update for WoW 12.0.7
+
 ## 1.1.7
 - Warn in chat if another FixRaid copy is also loaded (conflict between this fork and the original)
 

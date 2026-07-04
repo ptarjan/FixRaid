@@ -183,8 +183,9 @@ function M:ProcessDelta()
       return
     end
   end
-  -- Should never get here.
-  A.console:Errorf(M, "unable to find slot for %s!", R.action.name)
+  -- Should never get here. (R.action was wiped by CancelAction above — use
+  -- the local name or the error itself would error on a nil format arg.)
+  A.console:Errorf(M, "unable to find slot for %s!", name)
 end
 
 function M:IsActionScheduled()

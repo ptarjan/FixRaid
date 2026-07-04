@@ -129,6 +129,9 @@ local function sendMessage(cmd, message, localOnly, addPrefix)
 end
 
 function M:CHAT_MSG_SYSTEM(event, message)
+  if not message or (issecretvalue and issecretvalue(message)) then
+    return
+  end
   local prefix = R.expectSystemMsgPrefix
   if A.DEBUG >= 2 then A.console:Debugf(M, "event=%s message=[%s] prefix=[%s]", event, message, tostring(prefix)) end
   if not prefix or not isExpecting(true) then
@@ -145,6 +148,9 @@ function M:CHAT_MSG_SYSTEM(event, message)
   local v = strsub(message, i + strlen(prefix))
   v = strsub(v, 1, strfind(v, "%s"))
   local choseIndex = tonumber(strtrim(v))
+  if not choseIndex then
+    return
+  end
   local choseValue = choseIndex > 0 and choseIndex <= #R.options and R.options[choseIndex] or "?"
 
   -- Announce the winner.
@@ -392,8 +398,9 @@ function M:GetChoosingDesc(isTooltip, cmd, mode, modeType, useColor, validClasse
     end
   elseif mode == "notMe" then
     if IsInRaid() then
-      A.group.BuildUniqueNames()
-      arg1 = A.group:GetPlayer(UnitName("player")).uniqueName
+      A.group:BuildUniqueNames()
+      local me = A.group:GetPlayer(UnitName("player"))
+      arg1 = me and me.uniqueName or UnitName("player")
     else
       arg1 = A.group:GetUniqueNameParty("player")
     end

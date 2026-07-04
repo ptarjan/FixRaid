@@ -12,7 +12,7 @@ local _G = _G
 
 function M:RegisterSlashCommand(cmds, func)
   for _, cmd in ipairs(cmds) do
-    local name = strlower(cmd), A.NAME..strupper(cmd)
+    local name = A.NAME..strupper(cmd)
     SlashCmdList[name] = func
     _G["SLASH_"..name.."1"] = "/"..strlower(cmd)
   end

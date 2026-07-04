@@ -156,7 +156,7 @@ end
 function M:FIXGROUPS_PLAYER_LEFT(player)
   if not player.isUnknown and player.name then
     if A.DEBUG >= 2 then A.console:Debugf(M, "cancelled needToInspect %s", player.name) end
-    R.needToInspect[player.name] = false
+    R.needToInspect[player.name] = nil
   end
 end
 
@@ -177,7 +177,8 @@ local function guessMeleeOrRangedFromBuffs(name)
       end
     end
   end
-  if UnitClass(name) == "HUNTER" then
+  -- Class token is the second return; the first is localized.
+  if select(2, UnitClass(name)) == "HUNTER" then
     return
   end
   for buff, role in pairs(BUFF_ROLE) do

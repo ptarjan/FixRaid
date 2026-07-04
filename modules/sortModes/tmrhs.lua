@@ -10,16 +10,24 @@ local PADDING_PLAYER = {role=5, isDummy=true}
 
 local format, sort, tinsert = format, sort, tinsert
 
+-- The roster has no SUPPORT role yet (A.group.ROLE is TANK/HEALER/MELEE/
+-- RANGED/UNKNOWN), so the support-distribution pass is skipped until one
+-- exists — without it this mode sorts like tmrh. The previous code indexed
+-- M.ROLE (nil on this module), which made /fr tmrhs error every time.
+local SUPPORT = A.group.ROLE.SUPPORT
+
 -- Helper function to get the count of SUPPORT players in each group
 local function getSupportCountInGroups(groups, players)
   local supportCount = {}
   for i = 1, 8 do
     supportCount[i] = 0
   end
-
+  if not SUPPORT then
+    return supportCount
+  end
   for _, playerIndex in ipairs(groups) do
     local player = players[playerIndex]
-    if player.role == M.ROLE.SUPPORT then
+    if player.role == SUPPORT and player.group then
       supportCount[player.group] = supportCount[player.group] + 1
     end
   end
@@ -34,11 +42,12 @@ local function getDefaultCompareFunc(sortMode, keys, players)
 
   return function(a, b)
     ra, rb = ROLE_KEY[players[a].role or 5] or 4, ROLE_KEY[players[b].role or 5] or 4
-    
+
     -- Prioritize SUPPORT roles in groups with fewer SUPPORT players
-    if ra == M.ROLE.SUPPORT or rb == M.ROLE.SUPPORT then
-      if supportCount[players[a].group] ~= supportCount[players[b].group] then
-        return supportCount[players[a].group] < supportCount[players[b].group]
+    if SUPPORT and (players[a].role == SUPPORT or players[b].role == SUPPORT) then
+      local ga, gb = players[a].group, players[b].group
+      if ga and gb and supportCount[ga] ~= supportCount[gb] then
+        return supportCount[ga] < supportCount[gb]
       end
     end
 

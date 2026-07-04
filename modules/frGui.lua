@@ -95,7 +95,8 @@ end
 
 function M:Toggle()
   if R.window then
-    R.window:SetCallback("OnClose", onCloseWindow)
+    -- Hide fires the OnClose callback, which releases the widget.
+    R.window:Hide()
   else
     M:Open()
   end

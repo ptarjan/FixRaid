@@ -352,11 +352,21 @@ function M:ShowPanel(tankData, mtData)
 end
 
 function M:HidePanel()
-  if R.container then
-    R.container:SetAlpha(1)
-    R.container:EnableMouse(true)
-    R.container:Hide()
+  if not R.container then
+    return
   end
+  if InCombatLockdown() then
+    -- Can't Hide() a container of shown secure buttons in combat (the close
+    -- button and Escape both route here). Make it invisible now and let
+    -- PLAYER_REGEN_ENABLED do the real Hide.
+    R.hiddenForCombat = true
+    R.container:SetAlpha(0)
+    R.container:EnableMouse(false)
+    return
+  end
+  R.container:SetAlpha(1)
+  R.container:EnableMouse(true)
+  R.container:Hide()
 end
 
 function M:ForceShowPanel()

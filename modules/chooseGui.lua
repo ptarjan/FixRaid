@@ -105,7 +105,8 @@ end
 
 function M:Close()
   if R.window then
-    PlaySound("gsTitleOptionExit")
+    -- String sound names stopped working in 7.3; use the soundkit ID.
+    PlaySound(SOUNDKIT and SOUNDKIT.GS_TITLE_OPTION_EXIT or 799)
     R.window.frame:Hide()
   end
 end

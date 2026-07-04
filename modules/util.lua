@@ -145,6 +145,10 @@ function M:GetFirstSittingGroup()
     return 9
   end
   local difficulty, _, maxPlayers = select(3, GetInstanceInfo())
+  if issecretvalue and (issecretvalue(difficulty) or issecretvalue(maxPlayers)) then
+    -- 12.0 can hide instance info; assume no bench rather than erroring.
+    return 9
+  end
   if difficulty == 16 then
     -- Mythic: support up to 10 benched players in raid, groups 7 and 8.
     return 7
@@ -169,6 +173,9 @@ end
 
 function M:GetFixedInstanceSize()
   local difficulty = select(3, GetInstanceInfo())
+  if issecretvalue and issecretvalue(difficulty) then
+    return nil
+  end
   if difficulty == 16 then
     -- Mythic
     return 20

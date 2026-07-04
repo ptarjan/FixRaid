@@ -44,19 +44,27 @@ local function getBlizzardSnapshot()
   local found = false
   if damageSession and damageSession.combatSources then
     for _, source in ipairs(damageSession.combatSources) do
-      local rosterName = fullPlayerNames[source.name] or source.name
-      if A.group:GetPlayer(rosterName) then
-        found = true
-        R.snapshot[rosterName] = (R.snapshot[rosterName] or 0) + (source.totalAmount or 0)
+      if source.name and not (issecretvalue and issecretvalue(source.name)) then
+        local rosterName = fullPlayerNames[source.name] or source.name
+        if A.group:GetPlayer(rosterName) then
+          found = true
+          local amt = source.totalAmount
+          if not amt or (issecretvalue and issecretvalue(amt)) then amt = 0 end
+          R.snapshot[rosterName] = (R.snapshot[rosterName] or 0) + amt
+        end
       end
     end
   end
   if healingSession and healingSession.combatSources then
     for _, source in ipairs(healingSession.combatSources) do
-      local rosterName = fullPlayerNames[source.name] or source.name
-      if A.group:GetPlayer(rosterName) then
-        found = true
-        R.snapshot[rosterName] = (R.snapshot[rosterName] or 0) + (source.totalAmount or 0)
+      if source.name and not (issecretvalue and issecretvalue(source.name)) then
+        local rosterName = fullPlayerNames[source.name] or source.name
+        if A.group:GetPlayer(rosterName) then
+          found = true
+          local amt = source.totalAmount
+          if not amt or (issecretvalue and issecretvalue(amt)) then amt = 0 end
+          R.snapshot[rosterName] = (R.snapshot[rosterName] or 0) + amt
+        end
       end
     end
   end
@@ -156,7 +164,7 @@ SUPPORTED_ADDONS.Details.getSnapshot = function()
       end
     end
   end
-  return true
+  return found or false
 end
 
 local function calculateAverages()
@@ -228,6 +236,9 @@ function M:BuildSnapshot(notifyIfNoAddon)
 end
 
 function M:GetPlayerMeter(name)
+  -- Padding dummies injected by tmrh/tmrhs onBeforeSort have no name;
+  -- writing R.snapshot[nil] would error mid-sort.
+  if not name then return 0 end
   if not R.snapshot[name] then
     R.snapshot[name] = R.snapshot[A.group:IsHealer(name) and "_averageHealing" or "_averageDamage"] or 0
   end

@@ -96,6 +96,9 @@ end
 function M:GetInspectData(guid)
   local name, realm = select(6, GetPlayerInfoByGUID(guid))
   local specId
+  if issecretvalue(name) then
+    return false, nil, specId
+  end
   if name and realm and not issecretvalue(realm) and realm ~= "" then
     name = name.."-"..gsub(realm, "[ %-]", "")
   end

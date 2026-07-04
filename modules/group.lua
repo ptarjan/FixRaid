@@ -146,7 +146,10 @@ local function buildSoloRoster(rindex)
   p.class = select(2, UnitClass("player"))
   p.zone = GetRealZoneText()
   R.groupSizes[1] = R.groupSizes[1] + 1
-  local unitRole = select(6, GetSpecializationInfo(GetSpecialization()))
+  -- A character below level 10 has no spec; GetSpecialization() returns nil
+  -- and GetSpecializationInfo(nil) would error.
+  local spec = GetSpecialization()
+  local unitRole = spec and select(6, GetSpecializationInfo(spec))
   if unitRole == "TANK" then
     p.role = M.ROLE.TANK
   elseif unitRole == "HEALER" then
@@ -211,6 +214,16 @@ local function buildRoster()
       p = wipe(R.rosterArray[i])
       p.rindex = i
       p.name, p.rank, p.group, _, _, p.class, p.zone = GetRaidRosterInfo(i)
+      -- 12.0 can return secret values for any of these; sanitize at ingestion
+      -- so downstream comparisons/table indexing (here, sortRaid, clearSkip,
+      -- /choose) can't error.
+      if issecretvalue then
+        if issecretvalue(p.name) then p.name = nil end
+        if issecretvalue(p.rank) then p.rank = 0 end
+        if issecretvalue(p.group) then p.group = 1 end
+        if issecretvalue(p.class) then p.class = nil end
+        if issecretvalue(p.zone) then p.zone = nil end
+      end
       if isRaid then
         p.unitID = "raid"..i
       else
@@ -454,7 +467,8 @@ end
 
 function M:IsInSameZone(name)
   if name and R.roster[name] then
-    return R.roster[name].zone == R.roster[UnitName("player")].zone
+    local me = R.roster[UnitName("player")]
+    return me and (R.roster[name].zone == me.zone)
   end
 end
 

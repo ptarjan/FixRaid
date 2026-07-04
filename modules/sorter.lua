@@ -119,7 +119,7 @@ function M:StopYield(raidOfficerName, message, isCancel)
   local mode = getModeToStop()
   if mode then
     M:Stop()
-    A.console:Print(L["sorter.print.raidOfficer."..(isCancel and "cancel" or "yield")], mode, A.util:UnitNameWithColor(raidOfficerName))
+    A.console:Printf(L["sorter.print.raidOfficer."..(isCancel and "cancel" or "yield")], mode, A.util:UnitNameWithColor(raidOfficerName))
   end
   message = message and strtrim(message) or ""
   if not isCancel and message ~= "" then
