@@ -10,16 +10,24 @@ M.private = {
   pendingMarks = {},
   pendingMainTanks = {},
   warnedMarking = false,
+  warnedTankAssist = false,
 }
 local R = M.private
 
 local min, sort, tinsert, wipe = min, sort, tinsert, wipe
-local GetNumGroupMembers, GetRaidRosterInfo, IsInInstance, IsInRaid, PromoteToAssistant, UnitExists, UnitGroupRolesAssigned, UnitName = GetNumGroupMembers, GetRaidRosterInfo, IsInInstance, IsInRaid, PromoteToAssistant, UnitExists, UnitGroupRolesAssigned, UnitName
+local GetNumGroupMembers, GetRaidRosterInfo, IsInInstance, IsInRaid, UnitExists, UnitGroupRolesAssigned, UnitName = GetNumGroupMembers, GetRaidRosterInfo, IsInInstance, IsInRaid, UnitExists, UnitGroupRolesAssigned, UnitName
 
 local function warnMarkingUnavailable()
   if not R.warnedMarking then
     R.warnedMarking = true
     A.console:Print("Automatic raid target marking is unavailable in Patch 12.0 due to Blizzard API changes. Please mark targets manually.")
+  end
+end
+
+local function warnTankAssistUnavailable()
+  if not R.warnedTankAssist then
+    R.warnedTankAssist = true
+    A.console:Print("Automatically giving tanks assist is unavailable in Patch 12.0 due to Blizzard API changes (PromoteToAssistant is protected). Please promote manually.")
   end
 end
 
@@ -51,7 +59,9 @@ function M:FixRaid(isRequestFromAssist)
       unitID = "raid"..i
       unitRole = UnitGroupRolesAssigned(unitID)
       if IsInRaid() and A.util:IsLeader() and A.options.tankAssist and unitRole == "TANK" and (not rank or rank < 1) then
-        PromoteToAssistant(unitID)
+        -- PromoteToAssistant is protected in 12.0; calling it only produces
+        -- an ADDON_ACTION_BLOCKED error.
+        warnTankAssistUnavailable()
       end
       if unitRole == "TANK" then
         tinsert(marks, {key=name, unitID=unitID})

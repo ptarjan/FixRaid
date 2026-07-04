@@ -10,6 +10,7 @@
 - Fix an error when closing the marking panel with X or Escape during combat
 - Fix a garbled chat message when another officer cancels or takes over your sort
 - Fix `/choose` errors when the roll result message can't be read
+- The "give tanks assist" option no longer causes a blocked-action error — WoW 12.0 stops addons from promoting assistants, so FixRaid now reminds you once to promote manually
 - Update for WoW 12.0.7
 
 ## 1.1.7
