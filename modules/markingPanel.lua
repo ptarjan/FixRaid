@@ -61,22 +61,13 @@ local function createContainer()
   close:SetPoint("TOPRIGHT", f, "TOPRIGHT", -2, -2)
   close:SetScript("OnClick", function() M:HidePanel() end)
 
-  -- Escape key support. Deliberately NOT via UISpecialFrames: inserting an
-  -- entry there taints the table, and secure code (CloseSpecialWindows, run
-  -- from Escape/ToggleGameMenu) iterates it, spreading FixRaid taint into
-  -- protected paths. Handle the key directly instead. Keyboard input is
-  -- disabled during combat (see PLAYER_REGEN_LOST) because
-  -- SetPropagateKeyboardInput is restricted in combat lockdown.
-  f:EnableKeyboard(true)
-  f:SetPropagateKeyboardInput(true)
-  f:SetScript("OnKeyDown", function(self, key)
-    if key == "ESCAPE" then
-      self:SetPropagateKeyboardInput(false)
-      M:HidePanel()
-    else
-      self:SetPropagateKeyboardInput(true)
-    end
-  end)
+  -- Escape key support via UISpecialFrames. An OnKeyDown handler was tried
+  -- instead (to avoid tainting the UISpecialFrames table slot), but the frame
+  -- did not reliably receive keyboard input, leaving Escape dead. This is the
+  -- Blizzard-sanctioned mechanism; the tainted-table-slot exposure is minor
+  -- and accepted. (The Group Finder taint was the ChatFrameUtil RawHook,
+  -- removed separately in 1.1.8.)
+  tinsert(UISpecialFrames, "FixRaidMarkingPanel")
 
   return f
 end
@@ -221,9 +212,6 @@ function M:PLAYER_REGEN_LOST()
     R.hiddenForCombat = true
     R.container:SetAlpha(0)
     R.container:EnableMouse(false)
-    -- The OnKeyDown handler calls SetPropagateKeyboardInput, which is
-    -- restricted during combat lockdown — stop listening entirely.
-    R.container:EnableKeyboard(false)
   end
 end
 
@@ -235,9 +223,6 @@ function M:PLAYER_REGEN_ENABLED()
   if R.pendingCombat then
     R.pendingCombat = false
     M:FIXGROUPS_SORT_COMPLETE()
-  end
-  if R.container and R.container:IsShown() then
-    R.container:EnableKeyboard(true)
   end
 end
 
@@ -369,7 +354,6 @@ function M:ShowPanel(tankData, mtData)
 
   -- Resize container to fit all rows.
   R.container:SetSize(PANEL_WIDTH, TITLE_HEIGHT + PADDING * 2 + totalRows * ROW_HEIGHT)
-  R.container:EnableKeyboard(true)
   R.container:Show()
 
 end
@@ -385,7 +369,6 @@ function M:HidePanel()
     R.hiddenForCombat = true
     R.container:SetAlpha(0)
     R.container:EnableMouse(false)
-    R.container:EnableKeyboard(false)
     return
   end
   R.container:SetAlpha(1)
