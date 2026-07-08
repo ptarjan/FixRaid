@@ -54,6 +54,25 @@ function M:CloseConfig()
     end
 end
 
+-- Close-on-Escape for AceGUI windows via UISpecialFrames. AceGUI recycles
+-- frames from a shared pool, so the global name is (re)pointed at the
+-- window's current frame on every open and cleared on close — otherwise
+-- Escape could hide an unrelated widget that later reuses the same frame.
+-- Each name is only ever inserted into UISpecialFrames once.
+local escRegisteredNames = {}
+
+function M:EnableEscapeClose(window, globalName)
+  _G[globalName] = window.frame
+  if not escRegisteredNames[globalName] then
+    escRegisteredNames[globalName] = true
+    tinsert(UISpecialFrames, globalName)
+  end
+end
+
+function M:DisableEscapeClose(globalName)
+  _G[globalName] = nil
+end
+
 function M:InsertText(text)
   local editBox = GetCurrentKeyBoardFocus()
   if editBox then

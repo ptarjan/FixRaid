@@ -3,6 +3,7 @@
 ## 1.1.9
 - Fix the marking panel closing itself after the last raid-mark click while "Set MT" buttons were still waiting to be clicked
 - Fix Escape not closing the marking panel (regression in 1.1.8)
+- The main FixRaid window (/fr) and the /choose window now also close with Escape
 
 ## 1.1.8
 - Fix errors that could stop the addon working in raids where WoW 12.0 hides player or instance info (subgroups, ranks, difficulty, damage meter names and totals)

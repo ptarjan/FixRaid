@@ -91,6 +91,7 @@ local function newRow(container)
 end
 
 local function onCloseWindow(widget)
+  A.utilGui:DisableEscapeClose("FixRaidChooseWindow")
   A.utilGui:CleanupWindow(R.window, R.texturedButtons)
   R.window = false
   R.cmd = false
@@ -126,6 +127,7 @@ function M:Open(cmd)
   R.window:SetTitle(A.NAME.." "..format(L["gui.title"], "/"..cmd))
   resetWindowSize()
   R.window:SetCallback("OnClose", onCloseWindow)
+  A.utilGui:EnableEscapeClose(R.window, "FixRaidChooseWindow")
   R.window:SetLayout("Flow")
   local c = R.window
 

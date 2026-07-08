@@ -81,6 +81,7 @@ local function addButton(altColor, container, cmd, forceClose, aliases)
 end
 
 local function onCloseWindow(widget)
+  A.utilGui:DisableEscapeClose("FixRaidMainWindow")
   A.utilGui:CleanupWindow(R.window, R.texturedButtons)
   R.window = false
   R.label = false
@@ -113,6 +114,7 @@ function M:Open()
   R.window:SetTitle(A.NAME.." "..format(L["gui.title"], "/fr"))
   resetWindowSize()
   R.window:SetCallback("OnClose", onCloseWindow) --SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
+  A.utilGui:EnableEscapeClose(R.window, "FixRaidMainWindow")
   R.window:SetLayout("Flow")
   local c = R.window
 
