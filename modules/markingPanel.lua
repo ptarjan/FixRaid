@@ -120,10 +120,12 @@ local function createRow(parent, index)
     if not InCombatLockdown() then
       self:Hide()
     end
-    -- Check if any rows are still visible.
+    -- Check if any rows are still visible — BOTH row kinds. Only checking
+    -- mark rows here made the panel close after the last mark click while
+    -- Set MT buttons were still waiting.
     local anyVisible = false
     for i = 1, MAX_ROWS do
-      if R.rows[i] and R.rows[i]:IsShown() then
+      if (R.rows[i] and R.rows[i]:IsShown()) or (R.mtRows[i] and R.mtRows[i]:IsShown()) then
         anyVisible = true
         break
       end

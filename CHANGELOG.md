@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.9
+- Fix the marking panel closing itself after the last raid-mark click while "Set MT" buttons were still waiting to be clicked
+
 ## 1.1.8
 - Fix errors that could stop the addon working in raids where WoW 12.0 hides player or instance info (subgroups, ranks, difficulty, damage meter names and totals)
 - Fix `/fr tmrhs` always failing with an error
