@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.10
+- Ready for WoW 12.1.0
+
 ## 1.1.9
 - Fix the marking panel closing itself after the last raid-mark click while "Set MT" buttons were still waiting to be clicked
 - Fix Escape not closing the marking panel (regression in 1.1.8)
