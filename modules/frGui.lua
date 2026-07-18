@@ -8,9 +8,9 @@ M.private = {
   texturedButtons = {},
 }
 local R = M.private
-local H, HA, HD = A.util.Highlight, A.util.HighlightAddon, A.util.HighlightDim
+local H, HD = A.util.Highlight, A.util.HighlightDim
 
-local ceil, format, ipairs, min, time, type = ceil, format, ipairs, min, time, type
+local format, ipairs, time, type = format, ipairs, time, type
 local GameFontHighlight, GameTooltip, IsControlKeyDown, IsShiftKeyDown, UIParent = GameFontHighlight, GameTooltip, IsControlKeyDown, IsShiftKeyDown, UIParent
 
 local AceGUI = LibStub("AceGUI-3.0")

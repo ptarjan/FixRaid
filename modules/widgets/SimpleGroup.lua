@@ -1,6 +1,6 @@
 --- Copy of AceGUIContainer-SimpleGroup. Works exactly the same, just has a
 -- name unique to the addon. This prevents ElvUI from skinning this container.
-local A, L = unpack(select(2, ...))
+local A = unpack(select(2, ...))
 --[[-----------------------------------------------------------------------------
 SimpleGroup Container
 Simple container widget that just groups widgets.

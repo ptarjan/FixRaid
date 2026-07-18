@@ -10,7 +10,7 @@
 --  * Windows draggable by clicking anywhere, not just the title bar.
 --  * Windows that capture the Escape key to close.
 --
-local A, L = unpack(select(2, ...))
+local A = unpack(select(2, ...))
 local M = A:NewModule("utilGui", "AceTimer-3.0")
 A.utilGui = M
 M.private = {
@@ -18,12 +18,10 @@ M.private = {
 }
 local R = M.private
 
-local FILL_PLUS_STATUS_BAR = A.NAME.."FillPlusStatusBar"
 local DELAY_OPEN_RAID_TAB = 0.01
-local AceGUI = LibStub("AceGUI-3.0")
 
-local GameFontHighlightLarge, GetCurrentKeyBoardFocus, GetBindingFromClick, OpenFriendsFrame, PlaySound, ToggleFriendsFrame = GameFontHighlightLarge, GetCurrentKeyBoardFocus, GetBindingFromClick, OpenFriendsFrame, PlaySound, ToggleFriendsFrame
-local format, max, pairs, strmatch = format, max, pairs, strmatch
+local GetCurrentKeyBoardFocus, OpenFriendsFrame, ToggleFriendsFrame = GetCurrentKeyBoardFocus, OpenFriendsFrame, ToggleFriendsFrame
+local format, pairs, strmatch = format, pairs, strmatch
 
 -- GLOBALS: ElvUI
 

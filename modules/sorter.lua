@@ -24,7 +24,7 @@ local MAX_STEPS = 30
 local MAX_TIMEOUTS = 20
 local DELAY_TIMEOUT = 1.0
 
-local floor, format, max, tostring, time, wipe = floor, format, max, tostring, time, wipe
+local format, time, wipe = format, time, wipe
 local InCombatLockdown, IsInRaid, SendChatMessage = InCombatLockdown, IsInRaid, SendChatMessage
 
 local function swap(t, k1, k2)

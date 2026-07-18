@@ -51,7 +51,7 @@ read_globals = {
     "INLINE_TANK_ICON", "LE_PARTY_CATEGORY_INSTANCE",
     "LOCALIZED_CLASS_NAMES_FEMALE", "LOCALIZED_CLASS_NAMES_MALE",
     "RAID_CLASS_COLORS", "RANDOM_ROLL_RESULT", "ROLE_CHANGED_INFORM",
-    "SOUNDKIT", "UNKNOWN",
+    "SOUNDKIT", "TANK", "HEALER", "UNKNOWN",
     -- other addons integrated with
     "AceGUI", "DBM", "Details", "ElvUI", "LibStub", "Recount", "Skada",
     "tdpsPet", "tdpsPlayer",
@@ -70,16 +70,3 @@ globals = {
     -- Blizzard tables addons legitimately add entries to
     "StaticPopupDialogs", "UISpecialFrames",
 }
-
--- FixRaid-specific: relax unused-local (211) and whitespace (611) warnings
--- for the legacy codebase. TODO: clean up and remove.
-ignore = { "211", "311", "41.", "42.", "43.", "611" }
-
--- FixRaid-specific: legacy leaked globals inherited from the original addon.
--- TODO: convert these to locals/ns exports and shrink this list to zero.
-for _, g in ipairs({
-    "H", "HA", "HD", "L", "TANK", "HEALER", "_", "c", "d", "i", "k", "key",
-    "message", "name", "online", "rank", "specId", "classLower",
-}) do
-    table.insert(globals, g)
-end

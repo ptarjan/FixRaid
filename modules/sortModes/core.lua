@@ -151,7 +151,7 @@ function M.onSort(sortMode, keys, players)
     tinsert(keys, k)
     players[k] = PADDING_PLAYER
   end
-  for _, k in ipairs(nonCore) do
-    tinsert(keys, k)
+  for _, nonCoreKey in ipairs(nonCore) do
+    tinsert(keys, nonCoreKey)
   end
 end

@@ -20,7 +20,7 @@ do
   end
 end
 
-local format, floor, ipairs, pairs, sort, tinsert, tostring, wipe = format, floor, ipairs, pairs, sort, tinsert, tostring, wipe
+local format, floor, ipairs, pairs, tinsert, tostring, wipe = format, floor, ipairs, pairs, tinsert, tostring, wipe
 local tconcat = table.concat
 local InCombatLockdown, SetRaidSubgroup, SwapRaidSubgroup = InCombatLockdown, SetRaidSubgroup, SwapRaidSubgroup
 
@@ -30,12 +30,12 @@ function M:BuildDelta(sortMode)
   local keys = wipe(R.keys)
   local players = wipe(R.players)
   local skipFirstGroups = sortMode.skipFirstGroups or 0
-  local k
+  local sortKey
   for name, p in pairs(A.group:GetRoster()) do
     if (not p.isSitting and p.group > skipFirstGroups) or sortMode.isIncludingSitting then
-      k = (p.class and CLASS_SORT_CHAR[p.class] or "Z")..(p.isUnknown and ("_"..name) or name)
-      tinsert(keys, k)
-      players[k] = p
+      sortKey = (p.class and CLASS_SORT_CHAR[p.class] or "Z")..(p.isUnknown and ("_"..name) or name)
+      tinsert(keys, sortKey)
+      players[sortKey] = p
     end
   end
 

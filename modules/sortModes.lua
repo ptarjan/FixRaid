@@ -1,5 +1,5 @@
 --- Sort mode registry.
-local A, L = unpack(select(2, ...))
+local A = unpack(select(2, ...))
 local M = A:NewModule("sortModes")
 A.sortModes = M
 M.private = {
@@ -7,7 +7,7 @@ M.private = {
 }
 local R = M.private
 
-local format, ipairs, sort, tinsert, tostring = format, ipairs, sort, tinsert, tostring
+local format, ipairs, tostring = format, ipairs, tostring
 
 --- @param sortMode expected to be a table with the following keys:
 -- key = "example",                   -- (required) string

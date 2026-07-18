@@ -1,7 +1,7 @@
 --- Marking panel with SecureActionButtons for applying raid target marks.
 -- Shows after sorting completes, presenting clickable buttons for each tank.
 -- Required because SetRaidTarget() is protected in Patch 12.0+.
-local A, L = unpack(select(2, ...))
+local A = unpack(select(2, ...))
 local M = A:NewModule("markingPanel", "AceEvent-3.0")
 A.markingPanel = M
 M.private = {

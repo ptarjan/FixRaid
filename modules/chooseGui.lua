@@ -9,10 +9,9 @@ M.private = {
   mockSession = false,
 }
 local R = M.private
-local H, HA, HD = A.util.Highlight, A.util.HighlightAddon, A.util.HighlightDim
+local H, HD = A.util.Highlight, A.util.HighlightDim
 
-local format, gsub, ipairs, strlower, tinsert, tostring = format, gsub, ipairs, strlower, tinsert, tostring
-local tconcat = table.concat
+local format, gsub, ipairs, strlower, tostring = format, gsub, ipairs, strlower, tostring
 local GameFontHighlight, GameTooltip, IsControlKeyDown, IsShiftKeyDown, UIParent = GameFontHighlight, GameTooltip, IsControlKeyDown, IsShiftKeyDown, UIParent
 local CLASS_SORT_ORDER, LOCALIZED_CLASS_NAMES_MALE = CLASS_SORT_ORDER, LOCALIZED_CLASS_NAMES_MALE
 

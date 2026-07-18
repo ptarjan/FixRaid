@@ -2,9 +2,9 @@
 local A, L = unpack(select(2, ...))
 local M = A:NewModule("frCommand")
 A.frCommand = M
-local H, HA = A.util.Highlight, A.util.HighlightAddon
+local H = A.util.Highlight
 
-local format, gsub, print, strlen, strlower, strmatch, strsub, strtrim = format, gsub, print, strlen, strlower, strmatch, strsub, strtrim
+local gsub, strlen, strlower, strmatch, strsub, strtrim = gsub, strlen, strlower, strmatch, strsub, strtrim
 local IsInGroup, IsInRaid = IsInGroup, IsInRaid
 
 function M:OnEnable()

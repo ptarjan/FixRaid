@@ -6,7 +6,7 @@ M.private = {
   groupComp = false,
 }
 local R = M.private
-local H, HA, HD = A.util.Highlight, A.util.HighlightAddon, A.util.HighlightDim
+local HD = A.util.HighlightDim
 
 local NOT_IN_GROUP = HD(L["dataBroker.groupComp.notInGroup"])
 

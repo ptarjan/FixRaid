@@ -30,7 +30,7 @@ M.GROUP_COMP_STYLE = {
   VERBOSE = 999,
 }
 
-local floor, format, gmatch, gsub, ipairs, max, pairs, select, sort, strfind, strlower, strmatch, strsplit, strsub, strtrim, strupper, tinsert, tostring, tremove, wipe = floor, format, gmatch, gsub, ipairs, max, pairs, select, sort, strfind, strlower, strmatch, strsplit, strsub, strtrim, strupper, tinsert, tostring, tremove, wipe
+local format, gmatch, gsub, ipairs, pairs, select, sort, strfind, strlower, strmatch, strsplit, strsub, strtrim, strupper, tinsert, tostring, tremove, wipe = format, gmatch, gsub, ipairs, pairs, select, sort, strfind, strlower, strmatch, strsplit, strsub, strtrim, strupper, tinsert, tostring, tremove, wipe
 local tconcat = table.concat
 local ChatTypeInfo, GetBindingKey, GetInstanceInfo, GetRealmName, IsInGroup, IsInInstance, IsInRaid, UnitClass, UnitFullName, UnitIsGroupLeader, UnitIsRaidOfficer, UnitName = ChatTypeInfo, GetBindingKey, GetInstanceInfo, GetRealmName, IsInGroup, IsInInstance, IsInRaid, UnitClass, UnitFullName, UnitIsGroupLeader, UnitIsRaidOfficer, UnitName
 local LE_PARTY_CATEGORY_INSTANCE, RAID_CLASS_COLORS = LE_PARTY_CATEGORY_INSTANCE, RAID_CLASS_COLORS

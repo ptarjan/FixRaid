@@ -309,7 +309,7 @@ function M:ForceBuildRoster(callerModule, callerEvent)
   end
   buildRoster()
   if A.DEBUG >= 2 then M:DebugPrintRoster() end
-  
+
   local prevGroup, group
   for name, player in pairs(R.roster) do
     if R.prevRoster[name] then
@@ -321,7 +321,7 @@ function M:ForceBuildRoster(callerModule, callerEvent)
       end
     end
   end
-  
+
   local dropped = 0
   for name, player in pairs(R.prevRoster) do
     if not player.isUnknown and not R.roster[name] then
@@ -331,7 +331,7 @@ function M:ForceBuildRoster(callerModule, callerEvent)
       dropped = dropped + 1
     end
   end
-  
+
   for name, player in pairs(R.roster) do
     if not player.isUnknown and not R.prevRoster[name] then
       if A.DEBUG >= 1 then A.console:Debugf(M, "PLAYER_JOINED %s", name) end
@@ -339,12 +339,12 @@ function M:ForceBuildRoster(callerModule, callerEvent)
       M:SendMessage("FIXGROUPS_PLAYER_JOINED", player)
     end
   end
-  
+
   if R.prevRoleCountsString ~= R.roleCountsString then
     if A.DEBUG >= 1 then A.console:Debugf(M, "COMP_CHANGED %s -> %s", tostring(R.prevRoleCountsString), R.roleCountsString) end
     M:SendMessage("FIXGROUPS_COMP_CHANGED", R.prevRoleCountsString, R.roleCountsString)
   end
-  
+
   if dropped > 0 then
     local d, now = R.recentlyDropped, time()
     if d.when + 2 < now then

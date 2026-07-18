@@ -15,7 +15,7 @@ local NUM_FLASHES = 3
 local DELAY_FLASH = 0.5
 
 local format, strfind, strlower, time, tostring = format, strfind, strlower, time, tostring
-local CreateFrame, InCombatLockdown, IsControlKeyDown, IsInGroup, IsShiftKeyDown, UnitName = CreateFrame, InCombatLockdown, IsControlKeyDown, IsInGroup, IsShiftKeyDown, UnitName
+local CreateFrame, IsInGroup, UnitName = CreateFrame, IsInGroup, UnitName
 -- GLOBALS: LibStub, GameTooltip, RaidFrame, RaidFrameRaidInfoButton
 
 local CUBE_ICON_0 = "Interface\\Addons\\"..A.NAME.."\\media\\cubeIcon0_64.tga"

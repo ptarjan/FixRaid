@@ -13,7 +13,7 @@ M.private = {
   tmp2 = {},
 }
 local R = M.private
-local H, HA, HD = A.util.Highlight, A.util.HighlightAddon, A.util.HighlightDim
+local H = A.util.Highlight
 
 -- Actually it's 255, but we'll be conservative.
 local MAX_CHAT_LINE_LEN = 200
@@ -36,9 +36,9 @@ L["choose.print.choosing.damager"]  = A.util:LocaleLowerNoun(L["word.damager.sin
 L["choose.print.choosing.ranged"]   = A.util:LocaleLowerNoun(L["word.ranged.singular"])
 L["choose.print.choosing.melee"]    = A.util:LocaleLowerNoun(L["word.melee.singular"])
 
-local format, gmatch, gsub, ipairs, pairs, select, sort, strfind, strlen, strlower, strmatch, strsplit, strsub, strtrim, time, tinsert, tonumber, tostring, unpack, wipe = format, gmatch, gsub, ipairs, pairs, select, sort, strfind, strlen, strlower, strmatch, strsplit, strsub, strtrim, time, tinsert, tonumber, tostring, unpack, wipe
+local format, gmatch, gsub, ipairs, pairs, select, sort, strfind, strlen, strlower, strsplit, strsub, strtrim, time, tinsert, tonumber, tostring, unpack, wipe = format, gmatch, gsub, ipairs, pairs, select, sort, strfind, strlen, strlower, strsplit, strsub, strtrim, time, tinsert, tonumber, tostring, unpack, wipe
 local tconcat = table.concat
-local GetGuildInfo, IsInGroup, IsInRaid, RandomRoll, SendChatMessage, UnitClass, UnitExists, UnitIsDeadOrGhost, UnitIsInMyGuild, UnitIsUnit, UnitName, UnitGroupRolesAssigned = GetGuildInfo, IsInGroup, IsInRaid, RandomRoll, SendChatMessage, UnitClass, UnitExists, UnitIsDeadOrGhost, UnitIsInMyGuild, UnitIsUnit, UnitName, UnitGroupRolesAssigned
+local GetGuildInfo, IsInGroup, IsInRaid, RandomRoll, SendChatMessage, UnitClass, UnitExists, UnitIsDeadOrGhost, UnitIsInMyGuild, UnitIsUnit, UnitName = GetGuildInfo, IsInGroup, IsInRaid, RandomRoll, SendChatMessage, UnitClass, UnitExists, UnitIsDeadOrGhost, UnitIsInMyGuild, UnitIsUnit, UnitName
 local CLASS_SORT_ORDER, LOCALIZED_CLASS_NAMES_FEMALE, LOCALIZED_CLASS_NAMES_MALE, RANDOM_ROLL_RESULT = CLASS_SORT_ORDER, LOCALIZED_CLASS_NAMES_FEMALE, LOCALIZED_CLASS_NAMES_MALE, RANDOM_ROLL_RESULT
 
 local function startExpecting(numChatMsgs, systemMsgPrefix)
@@ -343,7 +343,7 @@ local function choosePlayer(cmd, mode, modeType)
     end
   end
   sort(R.options)
-  
+
   if mode == "melee" or mode == "ranged" then
     A.group:PrintIfThereAreUnknowns()
   end
@@ -433,7 +433,7 @@ local function chooseGroup(cmd)
   if isExpecting() then
     return
   end
-  
+
   wipe(R.options)
   if IsInRaid() then
     for g = 1, 8 do
@@ -452,7 +452,7 @@ local function chooseOption(cmd, sep, args)
   if isExpecting() then
     return
   end
-  
+
   R.optionsArePlayers = false
   wipe(R.options)
   for option in gmatch(args, "[^"..sep.."]+") do
@@ -517,7 +517,7 @@ local function buildDispatchTable()
     return d
   end
 
-  local c, d, classLower
+  local c, d
 
   -- Basic modes and non-localized aliases.
   add("gui", {A.chooseGui.Open}).aliasN({
@@ -584,14 +584,14 @@ local function buildDispatchTable()
     "prev"})
 
   -- Localized aliases for basic modes.
-  for _, d in pairs(DISPATCH) do
-    if d.primary then
-      for alias in gmatch(L["choose.modeAliases."..d.primary], "[^,]+") do
+  for _, disp in pairs(DISPATCH) do
+    if disp.primary then
+      for alias in gmatch(L["choose.modeAliases."..disp.primary], "[^,]+") do
         if alias ~= "" then
-          if d.primary == "group" and not LOCALE_GROUP then
+          if disp.primary == "group" and not LOCALE_GROUP then
             LOCALE_GROUP = alias
           end
-          d.alias(true, alias)
+          disp.alias(true, alias)
         end
       end
     end
@@ -687,8 +687,8 @@ local function buildDispatchTable()
     -- Copy the decorated aliases to a list and sort.
     -- The decorating ensures localized aliases get listed first.
     aliasList = wipe(R.tmp2)
-    for key, _ in pairs(aliasSet) do
-      tinsert(aliasList, key)
+    for alias, _ in pairs(aliasSet) do
+      tinsert(aliasList, alias)
     end
     sort(aliasList)
 
@@ -698,8 +698,8 @@ local function buildDispatchTable()
     end
 
     -- Undecorate. Add highlighting.
-    for i, key in ipairs(aliasList) do
-      aliasList[i] = H(aliasSet[key])
+    for i, alias in ipairs(aliasList) do
+      aliasList[i] = H(aliasSet[alias])
     end
 
     -- Convert to a flat string.
@@ -721,12 +721,12 @@ function M:Command(cmd, args)
   args = strtrim(args)
   local dispatch = DISPATCH[strlower(args)]
   if dispatch then
-    local func, mode, args = unpack(dispatch)
+    local func, mode, dispatchArgs = unpack(dispatch)
     if func == A.chooseGui.Open then
       mode = cmd
       cmd = A.chooseGui
     end
-    func(cmd, mode, args)
+    func(cmd, mode, dispatchArgs)
     if func == chooseLast then
       return
     end

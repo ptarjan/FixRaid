@@ -53,7 +53,7 @@ M.private = {
   },
 }
 local R = M.private
-local H, HA, HD = A.util.Highlight, A.util.HighlightAddon, A.util.HighlightDim
+local H, HA = A.util.Highlight, A.util.HighlightAddon
 
 -- The number next to each mark is how many times DBM uses that mark for
 -- all Draenor content.
@@ -75,7 +75,7 @@ local MARKS = {
   L["options.value.noMark"],
 }
 
-local format, gsub, ipairs, min, max, tinsert = format, gsub, ipairs, min, max, tinsert
+local format, min, max = format, min, max
 local tconcat = table.concat
 local GetGuildInfo = GetGuildInfo
 local ERR_RAID_MEMBER_ADDED_S, ERR_RAID_MEMBER_REMOVED_S, INLINE_TANK_ICON, ROLE_CHANGED_INFORM, TANK = ERR_RAID_MEMBER_ADDED_S, ERR_RAID_MEMBER_REMOVED_S, INLINE_TANK_ICON, ROLE_CHANGED_INFORM, TANK

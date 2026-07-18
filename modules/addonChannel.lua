@@ -8,7 +8,7 @@ M.private = {
   newerVersion = false,
 }
 local R = M.private
-local H, HA = A.util.Highlight, A.util.HighlightAddon
+local H = A.util.Highlight
 
 local strsplit, strtrim = strsplit, strtrim
 local IsInGroup, IsInRaid, UnitExists, UnitIsRaidOfficer, UnitName = IsInGroup, IsInRaid, UnitExists, UnitIsRaidOfficer, UnitName
@@ -50,7 +50,7 @@ function M:CHAT_MSG_ADDON(event, prefix, message, channel, sender)
   cmd, message = strsplit(":", message, 2)
   if cmd == "v" and not R.newerVersion and A.options.notifyNewVersion then
     if message and (message > VERSION_STRING) then
-      message, R.newerVersion = strsplit(":", message, 2)
+      R.newerVersion = select(2, strsplit(":", message, 2))
       if R.newerVersion and strtrim(R.newerVersion) ~= "" then
         A.console:Printf(L["addonChannel.print.newerVersion"], A.NAME, H(A.util:Escape(R.newerVersion)), A.VERSION_PACKAGED)
       else

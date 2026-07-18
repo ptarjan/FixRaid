@@ -1,7 +1,7 @@
 --- Determine whether a player in the group is melee or ranged. This is trivial
 -- for most cases, but requires inspecting the player if they're a DPS shaman
 -- or druid.
-local A, L = unpack(select(2, ...))
+local A = unpack(select(2, ...))
 local M = A:NewModule("damagerRole", "AceEvent-3.0", "AceTimer-3.0")
 A.damagerRole = M
 M.private = {
@@ -51,7 +51,7 @@ local DELAY_DB_CLEANUP = 20.0
 local DB_CLEANUP_GUILD_MAX_AGE_DAYS = 21
 local DB_CLEANUP_NONGUILD_MAX_AGE_DAYS = 1.5
 
-local format, ipairs, max, pairs, select, time, tostring = format, ipairs, max, pairs, select, time, tostring
+local ipairs, pairs, select, time, tostring = ipairs, pairs, select, time, tostring
 local GetSpecialization, GetSpecializationInfo, InCombatLockdown, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit = GetSpecialization, GetSpecializationInfo, InCombatLockdown, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit
 
 local function cleanDbCache(cache, maxAgeDays)

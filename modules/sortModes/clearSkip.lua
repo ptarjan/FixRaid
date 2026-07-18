@@ -4,7 +4,7 @@ local P = A.sortModes
 local M = P:NewModule("clearSkip", "AceEvent-3.0")
 P.clearSkip = M
 
-local format, pairs, wipe = format, pairs, wipe
+local format, pairs = format, pairs
 
 local function isRaidTooBig(sortMode, groupOffset, skipFirstGroups)
   -- Count the number of players eligible for sorting.

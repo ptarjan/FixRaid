@@ -7,7 +7,7 @@ M.private = {
   tmp1 = {},
 }
 local R = M.private
-local H, HA = A.util.Highlight, A.util.HighlightAddon
+local HA = A.util.HighlightAddon
 
 local BLIZZARD_METER_NAME = "Blizzard Damage Meter"
 -- This list is ordered by popularity.
@@ -71,7 +71,7 @@ local function getBlizzardSnapshot()
   return found
 end
 
-local format, ipairs, pairs, select, tinsert, wipe = format, ipairs, pairs, select, tinsert, wipe
+local format, ipairs, pairs, tinsert, wipe = format, ipairs, pairs, tinsert, wipe
 local GetUnitName = GetUnitName
 -- GLOBALS: _G, tdps, tdpsPlayer, tdpsPet, Skada, Recount, Details
 
@@ -135,10 +135,10 @@ SUPPORTED_ADDONS.Recount.getSnapshot = function()
     end
   end
   -- Merge pet data.
-  for _, c in pairs(Recount.db2.combatants) do
-    if c.type == "Pet" and c.Fights and c.Fights.OverallData then
-      if A.group:GetPlayer(c.Owner) then
-        R.snapshot[c.Owner] = R.snapshot[c.Owner] + (c.Fights.OverallData.Damage or 0) + (c.Fights.OverallData.Healing or 0) + (c.Fights.OverallData.Absorbs or 0)
+  for _, pet in pairs(Recount.db2.combatants) do
+    if pet.type == "Pet" and pet.Fights and pet.Fights.OverallData then
+      if A.group:GetPlayer(pet.Owner) then
+        R.snapshot[pet.Owner] = R.snapshot[pet.Owner] + (pet.Fights.OverallData.Damage or 0) + (pet.Fights.OverallData.Healing or 0) + (pet.Fights.OverallData.Absorbs or 0)
       end
     end
   end

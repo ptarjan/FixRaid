@@ -1,6 +1,6 @@
 --- Handle setting target marker icons on players, giving tanks assist,
 -- setting main tanks, and changing master looter.
-local A, L = unpack(select(2, ...))
+local A = unpack(select(2, ...))
 local M = A:NewModule("marker")
 A.marker = M
 M.private = {
@@ -14,8 +14,8 @@ M.private = {
 }
 local R = M.private
 
-local min, sort, tinsert, wipe = min, sort, tinsert, wipe
-local GetNumGroupMembers, GetRaidRosterInfo, IsInInstance, IsInRaid, UnitExists, UnitGroupRolesAssigned, UnitName = GetNumGroupMembers, GetRaidRosterInfo, IsInInstance, IsInRaid, UnitExists, UnitGroupRolesAssigned, UnitName
+local tinsert, wipe = tinsert, wipe
+local GetNumGroupMembers, GetRaidRosterInfo, IsInInstance, IsInRaid, UnitGroupRolesAssigned = GetNumGroupMembers, GetRaidRosterInfo, IsInInstance, IsInRaid, UnitGroupRolesAssigned
 
 local function warnMarkingUnavailable()
   if not R.warnedMarking then
@@ -47,7 +47,7 @@ function M:FixRaid(isRequestFromAssist)
   local marks = wipe(R.tmp1)
   local unsetTanks = wipe(R.tmp2)
   local setNonTanks = wipe(R.tmp3)
-  local name, rank, subgroup, raidRole, unitID, unitRole
+  local name, rank, subgroup, raidRole, unitID, unitRole, _
   local firstSitting = A.util:GetFirstSittingGroup()
   if issecretvalue and issecretvalue(firstSitting) then firstSitting = 9 end
   for i = 1, GetNumGroupMembers() do

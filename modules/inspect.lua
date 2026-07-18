@@ -1,6 +1,6 @@
 --- Send inspection requests to the server. Maintain a table of pending
 -- requests for players that we can't inspect yet. Pause during combat.
-local A, L = unpack(select(2, ...))
+local A = unpack(select(2, ...))
 local M = A:NewModule("inspect", "AceEvent-3.0", "AceTimer-3.0")
 A.inspect = M
 M.private = {
@@ -14,7 +14,7 @@ local DELAY_TIMER = 16.0
 local DELAY_NOTIFY = 1.0
 local DELAY_INSPECT_NEXT = 0.01
 
-local format, gsub, ipairs, pairs, select, time = format, gsub, ipairs, pairs, select, time
+local gsub, ipairs, pairs, select, time = gsub, ipairs, pairs, select, time
 local CanInspect, GetInspectSpecialization, GetPlayerInfoByGUID, InCombatLockdown, NotifyInspect, UnitExists, UnitIsConnected = CanInspect, GetInspectSpecialization, GetPlayerInfoByGUID, InCombatLockdown, NotifyInspect, UnitExists, UnitIsConnected
 
 function M:OnEnable()
