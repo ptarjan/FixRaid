@@ -47,11 +47,11 @@ function M:FixRaid(isRequestFromAssist)
   local marks = wipe(R.tmp1)
   local unsetTanks = wipe(R.tmp2)
   local setNonTanks = wipe(R.tmp3)
-  local name, rank, subgroup, rank, online, raidRole, unitID, unitRole
+  local name, rank, subgroup, raidRole, unitID, unitRole
   local firstSitting = A.util:GetFirstSittingGroup()
   if issecretvalue and issecretvalue(firstSitting) then firstSitting = 9 end
   for i = 1, GetNumGroupMembers() do
-    name, rank, subgroup, _, _, _, _, online, _, raidRole = GetRaidRosterInfo(i)
+    name, rank, subgroup, _, _, _, _, _, _, raidRole = GetRaidRosterInfo(i)
     if issecretvalue and issecretvalue(subgroup) then subgroup = 1 end
     if issecretvalue and issecretvalue(rank) then rank = 0 end
     if subgroup >= 1 and subgroup < firstSitting then

@@ -736,7 +736,7 @@ function M:Command(cmd, args)
     chooseOption(cmd, ",", args)
   elseif strfind(args, "%s") then
     chooseOption(cmd, "%s", args)
-  elseif strfind(args, "[/%+%|]") and chooseClasses(cmd, args) then
+  elseif strfind(args, "[/%+%|]") and chooseClasses(cmd, args) then  -- luacheck: ignore 542
     -- Do nothing. The action is in the if clause above.
   else
     A.console:Printf(L["phrase.print.badArgument"], H(args), H("/"..cmd))

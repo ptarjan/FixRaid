@@ -20,7 +20,7 @@ local function hash(text)
   local src = salt..text
   local len = strlen(src)
   v = 1
-  for i = 1, len, 3 do 
+  for i = 1, len, 3 do
     v = fmod(v*8161, 4294967279) +  -- 2^32 - 17: Prime!
       (strbyte(src,i)*16776193) +
       ((strbyte(src,i+1) or (len-i+256))*8372226) +

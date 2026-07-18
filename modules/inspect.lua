@@ -60,10 +60,7 @@ local function inspectTimerTick()
 end
 
 local function isQueueEmpty()
-  for name, _ in pairs(R.requests) do
-    return false
-  end
-  return true
+  return next(R.requests) == nil
 end
 
 local function inspectTimerStart()
@@ -95,19 +92,19 @@ end
 
 function M:GetInspectData(guid)
   local name, realm = select(6, GetPlayerInfoByGUID(guid))
-  local specId
+
   if issecretvalue(name) then
-    return false, nil, specId
+    return false, nil, nil
   end
   if name and realm and not issecretvalue(realm) and realm ~= "" then
     name = name.."-"..gsub(realm, "[ %-]", "")
   end
   if not name then
-    return false, name, specId
+    return false, name, nil
   end
-  specId = GetInspectSpecialization(name)
+  local specId = GetInspectSpecialization(name)
   if not specId or specId == 0 then
-    return false, name, specId
+    return false, name, nil
   end
   return true, name, specId
 end

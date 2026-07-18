@@ -137,7 +137,7 @@ function M:IsLeaderOrAssist()
   if IsInRaid() then
     return UnitIsRaidOfficer("player") or UnitIsGroupLeader("player")
   end
-  return IsInGroup()  
+  return IsInGroup()
 end
 
 function M:GetFirstSittingGroup()
