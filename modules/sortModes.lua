@@ -9,7 +9,7 @@ local R = M.private
 
 local format, ipairs, tostring = format, ipairs, tostring
 
---- @param sortMode expected to be a table with the following keys:
+-- @param sortMode expected to be a table with the following keys:
 -- key = "example",                   -- (required) string
 -- name = "by whatever",              -- (required) string
 -- aliases = {"whatever"},            -- array of strings

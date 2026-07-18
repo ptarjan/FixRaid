@@ -25,7 +25,7 @@ local MAX_TIMEOUTS = 20
 local DELAY_TIMEOUT = 1.0
 
 local format, time, wipe = format, time, wipe
-local InCombatLockdown, IsInRaid, SendChatMessage = InCombatLockdown, IsInRaid, SendChatMessage
+local InCombatLockdown, IsInRaid, SendChatMessage = InCombatLockdown, IsInRaid, C_ChatInfo.SendChatMessage
 
 local function swap(t, k1, k2)
   local tmp = t[k1]

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.11
+- Fixed "/choose party1" through "/choose party8" doing nothing - these aliases were being dropped during setup (only the "group1".."group8" spellings worked)
+
 ## 1.1.10
 - Ready for WoW 12.1.0
 

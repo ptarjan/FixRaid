@@ -38,7 +38,7 @@ L["choose.print.choosing.melee"]    = A.util:LocaleLowerNoun(L["word.melee.singu
 
 local format, gmatch, gsub, ipairs, pairs, select, sort, strfind, strlen, strlower, strsplit, strsub, strtrim, time, tinsert, tonumber, tostring, unpack, wipe = format, gmatch, gsub, ipairs, pairs, select, sort, strfind, strlen, strlower, strsplit, strsub, strtrim, time, tinsert, tonumber, tostring, unpack, wipe
 local tconcat = table.concat
-local GetGuildInfo, IsInGroup, IsInRaid, RandomRoll, SendChatMessage, UnitClass, UnitExists, UnitIsDeadOrGhost, UnitIsInMyGuild, UnitIsUnit, UnitName = GetGuildInfo, IsInGroup, IsInRaid, RandomRoll, SendChatMessage, UnitClass, UnitExists, UnitIsDeadOrGhost, UnitIsInMyGuild, UnitIsUnit, UnitName
+local GetGuildInfo, IsInGroup, IsInRaid, RandomRoll, SendChatMessage, UnitClass, UnitExists, UnitIsDeadOrGhost, UnitIsInMyGuild, UnitIsUnit, UnitName = GetGuildInfo, IsInGroup, IsInRaid, RandomRoll, C_ChatInfo.SendChatMessage, UnitClass, UnitExists, UnitIsDeadOrGhost, UnitIsInMyGuild, UnitIsUnit, UnitName
 local CLASS_SORT_ORDER, LOCALIZED_CLASS_NAMES_FEMALE, LOCALIZED_CLASS_NAMES_MALE, RANDOM_ROLL_RESULT = CLASS_SORT_ORDER, LOCALIZED_CLASS_NAMES_FEMALE, LOCALIZED_CLASS_NAMES_MALE, RANDOM_ROLL_RESULT
 
 local function startExpecting(numChatMsgs, systemMsgPrefix)
@@ -604,7 +604,9 @@ local function buildDispatchTable()
   -- group1, group2, etc., and their localized aliases.
   for i = 1, 8 do
     d = {choosePlayer, "g"..i, "fromGroup"}
-    add("g"..i, d, true).alias(false, "group"..i, "party"..i)
+    add("g"..i, d, true)
+    d.alias(false, "group"..i)
+    d.alias(false, "party"..i)
     for alias in gmatch(L["choose.modeAliases.fromGroup"], "[^,]+") do
       alias = strtrim(alias)
       if alias ~= "" then
